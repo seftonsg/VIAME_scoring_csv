@@ -95,14 +95,39 @@ def make_dir_tree( img_names, newdir ):
 
 
 def copy_vitals( args ):
-  shutil.copyfile(   args.script, args.output +     '/' +   args.script)
-  shutil.copyfile(    args.truth, args.output +     '/' +    args.truth)
-  shutil.copyfile( args.computed, args.output +     '/' + args.computed)
-  shutil.copyfile(    args.truth, args.output + '/all/' +    args.truth)
-  shutil.copyfile( args.computed, args.output + '/all/' + args.computed)
+  shutil.copyfile(   args.script, args.output +     '/' +        args.script)
+  shutil.copyfile(    args.truth, args.output +     '/' +         args.truth)
+  shutil.copyfile( args.computed, args.output +     '/' +      args.computed)
+  shutil.copyfile(    args.truth, args.output + '/all/' +    'truth_all.csv')
+  shutil.copyfile( args.computed, args.output + '/all/' + 'computed_all.csv')
   return None
 
-#def make_scripts ()
+def make_scripts( img_names, args ):
+  #TODO: not compatable with Matt's scripts.  custom script only
+  script_extension = args.script.split('.')[-1]
+  tre = re.compile('SET TRUTHS=.*')
+  cre = re.compile('SET TRACKS=.*')
+  with open(args.script) as s:
+    for i in img_names:
+      os.chdir(i)
+      with open('score_' + i + '.' + script_extension, 'w' ) as o:
+        for l in s:
+          if tre.match(l):
+            l='SET TRUTHS=truth_' + i + '.csv\n'
+          if cre.match(l):
+            l='SET TRACKS=computed_' + i + '.csv\n'
+          o.write(l)
+    with open('score_all.' + script_extension, 'w') as o:
+      for l in s:
+          if tre.match(l):
+            l='SET TRUTHS=truth_' + i + '.csv\n'
+          if cre.match(l):
+            l='SET TRACKS=computed_' + i + '.csv\n'
+          o.write(l)
+      os.chdir( '..' )
+
+
+  return None
 
 
 
@@ -159,9 +184,11 @@ if __name__ == "__main__":
   #create a new truth file for each image
   os.chdir(args.output)
   create_subtrack_files( img_names, args )
-  move_subtrack_files( img_names, args )
-  os.chdir( '..' )
+  move_subtrack_files(   img_names, args )
 
+  #make the scripts
+  make_scripts( img_names, args )
+  os.chdir( '..' )
   
   print(img_names)
   #create a new computed file for each image
