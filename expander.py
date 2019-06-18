@@ -95,9 +95,11 @@ def make_dir_tree( img_names, newdir ):
 
 
 def copy_vitals( args ):
-  shutil.copyfile(   args.script, args.output + '/' +   args.script)
-  shutil.copyfile(    args.truth, args.output + '/' +    args.truth)
-  shutil.copyfile( args.computed, args.output + '/' + args.computed)
+  shutil.copyfile(   args.script, args.output +     '/' +   args.script)
+  shutil.copyfile(    args.truth, args.output +     '/' +    args.truth)
+  shutil.copyfile( args.computed, args.output +     '/' + args.computed)
+  shutil.copyfile(    args.truth, args.output + '/all/' +    args.truth)
+  shutil.copyfile( args.computed, args.output + '/all/' + args.computed)
   return None
 
 #def make_scripts ()
