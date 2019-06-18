@@ -1,3 +1,4 @@
 #.gitignore
 *.JPG
 1c*
+exp/*
