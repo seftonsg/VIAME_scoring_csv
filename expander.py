@@ -27,13 +27,13 @@ def ltos( l ):
     w += str(i) + ','
   return w
 
-def create_tmp_track_files( img_names, filename, prepend='' ):
-  with open( filename ) as f:
+def create_subtrack_files( img_names, args ):
+  with open( args.truth ) as t:
     for i in img_names:
-      #create tmp file
-      with open( prepend+i+".csv", 'w' ) as o:
+      #create sub-truth files
+      with open( 'truth_' + i + ".csv", 'w' ) as o:
         count = 0
-        for l in f:
+        for l in t:
           #find lines associated with the image
           l = l.strip().split(',')
           name = (l[1].split('.'))[0]
@@ -42,16 +42,46 @@ def create_tmp_track_files( img_names, filename, prepend='' ):
             l[2] = 0
             o.write( ltos(l) + "\n" )#'x'.join(y) adds list y to the end of string x
             count += 1
-      #o.close()
 
-    #f.close()
+  with open( args.computed ) as c:
+    for i in img_names:
+    #create sub-computed files
+      with open( 'computed_' + i + ".csv", 'w' ) as o:
+        count = 0
+        for l in c:
+          #find lines associated with the image
+          l = l.strip().split(',')
+          name = (l[1].split('.'))[0]
+          if name == i:
+            l[0] = count
+            l[2] = 0
+            o.write( ltos(l) + "\n" )#'x'.join(y) adds list y to the end of string x
+            count += 1
+
+  return None
+
+def move_subtrack_files( img_names, args ):
+  
+  cwd = os.getcwd()
+  for i in img_names:
+    #truth
+    tname = "truth_"+i+".csv"
+    src = cwd + '/' + tname
+    dst = cwd + '/' + i + '/' + tname
+    os.rename( src, dst )
+    #computed
+    cname = "computed_"+i+".csv"
+    src = cwd + '/' + cname
+    dst = cwd + '/' + i + '/' + cname
+    os.rename( src, dst )
+
   return None
 
 def make_dir_tree( img_names, newdir ):
   if os.path.exists( newdir ):
-    if not rmtree.avoids_symlink_attacks:
-      print( 'You are vulnerable to symlink attacks, please upgrade python or remove the output directory manualy.' )
-      sys.exit( 0 )
+    #if not shutil.rmtree.avoids_symlink_attacks:
+    #  print( 'You are vulnerable to symlink attacks, please upgrade python or remove the output directory manualy.' )
+    #  sys.exit( 0 )
     shutil.rmtree( newdir )
 
   os.mkdir( newdir )
@@ -64,25 +94,13 @@ def make_dir_tree( img_names, newdir ):
   return None
 
 
-def copy_vitals( img_names, args ):
-  if args.joint:
-    shutil.copyfile(args.joint, args.output+args.joint)
-  if args.category:
-    shutil.copyfile(args.category, args.output+args.category)
-
-
-
-  os.chdir(args.output)
-  cwd = os.getcwd
-  for i in img_names:
-    #truths
-    fname = "truth_"+i+".csv"
-    src = cwd + '/' + fname
-    dst = cwd + '/' + i + '/' + fname
-    os.rename( src, dst )
-
-  os.chdir( '..' )
+def copy_vitals( args ):
+  shutil.copyfile(   args.script, args.output + '/' +   args.script)
+  shutil.copyfile(    args.truth, args.output + '/' +    args.truth)
+  shutil.copyfile( args.computed, args.output + '/' + args.computed)
   return None
+
+#def make_scripts ()
 
 
 
@@ -92,15 +110,12 @@ if __name__ == "__main__":
   # Inputs
   parser.add_argument( '-truth', default=None,
              help='Input filename for groundtruth file.' )
-  oarser.add_argument( '-computed', default=None,
+  parser.add_argument( '-computed', default=None,
              help='Input filename for computed tracks file.' )
-  parser.add_argument( '-images', default=None,
+  parser.add_argument( '-images', default=None, #edit to accept file, or just computed
              help='Input directory for images.')
-
-  parser.add_argument( '-joint', default=None,
-             help='The name of the joint scoring script.  Will not copy otherwise.')
-  parser.add_argument( '-category', default=None,
-             help='The name of the categorical scoring script.  Will not copy otherwise.')
+  parser.add_argument( '-script', default=None,
+             help='The name of the scoring script.  Will not copy otherwise.')
 
   # Outputs
   parser.add_argument( '-output', default='exp',
@@ -118,12 +133,14 @@ if __name__ == "__main__":
   if not args.images:
     print( 'Error: images directory must be specified' )
     sys.exit( 0 )
-  if args.joint and not os.path.exists(args.joint): #can I raise an exception here?
-    print( 'Error: specified joint scoring file does not exist' )
+
+  if not args.script:
+    print( 'Error: a running script must be specified' )
     sys.exit( 0 )
-  if args.category and not os.path.exists(args.category):
-    print( 'Error: specified categorical scoring file does not exist' )
+  if args.script and not os.path.exists(args.script): #can I raise an exception here?
+    print( 'Error: specified script scoring file does not exist' )
     sys.exit( 0 )
+
   if os.path.exists(args.output):
     print( 'Warning: directory already exists and will be overwritten' )
 
@@ -134,20 +151,16 @@ if __name__ == "__main__":
   #create directory tree
   make_dir_tree( img_names, args.output )
 
+  #copy over vital files
+  copy_vitals( args )
+
   #create a new truth file for each image
   os.chdir(args.output)
-  create_tmp_track_files( img_names, args.truth, 'truth_' )
-  create_tmp_track_files( img_names, args.computed, 'computed_' )
+  create_subtrack_files( img_names, args )
+  move_subtrack_files( img_names, args )
   os.chdir( '..' )
 
-  #copy over vital files
-  copy_vitals( img_names, args )
   
   print(img_names)
   #create a new computed file for each image
   #don't forget the "all" directory
-
-
-
-
-
