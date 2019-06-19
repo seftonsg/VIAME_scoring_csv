@@ -30,8 +30,8 @@ def ltos( l ):
   return w[:-1]
 
 def create_subtrack_files( img_names, args ):
-  with open( args.truth ) as t:
-    for i in img_names:
+  for i in img_names:
+    with open( args.truth ) as t:
       #create sub-truth files
       with open( 'truth_' + i + ".csv", 'w' ) as o:
         count = 0
@@ -45,8 +45,7 @@ def create_subtrack_files( img_names, args ):
             o.write( ltos(l) + "\n" )#'x'.join(y) adds list y to the end of string x
             count += 1
 
-  with open( args.computed ) as c:
-    for i in img_names:
+    with open( args.computed ) as c:
     #create sub-computed files
       with open( 'computed_' + i + ".csv", 'w' ) as o:
         count = 0
