@@ -6,7 +6,8 @@ import sys
 import shutil
 import argparse
 import subprocess
-
+import shlex      #shell tokenizer
+import time       #for sleep
 
 def get_imgs( directory ):
 
@@ -127,7 +128,26 @@ def make_scripts( img_names, args ):
             l='SET TRACKS=computed_' + i + '.csv\n'
           o.write(l)
       os.chdir( '..' )
+  return None
 
+def script_handler( handle ):
+  dre  = re.compile('Press any key to continue')
+  done = False
+  while not done:
+    try:
+      sout, serr = handle.communicate( timeout=1 )
+      sout = sout.split("\n")
+      for o in sout:
+        print( o )
+        if dre.match(o):
+          done = True
+          print('done')
+          #os.stdin.write('c')
+
+    except subprocess.TimeoutExpired:
+      print("timeout exception")
+
+  handle.kill()
 
   return None
 
@@ -135,13 +155,39 @@ def run_scripts( img_names, args ):
   script_extension = args.script.split('.')[-1]
   for i in img_names:
     os.chdir(i)
-    process_name = 'score_' + i + '.' + script_extension
-    process = subprocess.run(process_name)
+    success = False
+    while not success:
+      process_name = 'score_' + i + '.' + script_extension
+      args = process_name #shlex.split(process_name + "")
+      try:
+        print( 'About to run: ' + process_name + ' in ' + os.getcwd())
+        print(args)
+        process = subprocess.Popen( args,
+                                    stdin              = subprocess.PIPE,
+                                    stdout             = subprocess.PIPE,
+                                    stderr             = subprocess.PIPE,
+                                    universal_newlines = True
+                                    #text   = True #python 3.7+ 
+                                    #encoding = not sure how to use this arg 
+                                  )
+        script_handler( process )
+        success = True
+      except OSError as e:
+        print("OSError: " + repr(e))
+        process.kill()
+
+    process.kill()
+    print(process.returncode)
     os.chdir( '..' )
+
+  while True:
+    time.sleep(10)
 
   os.chdir( 'all' )
   process_name = 'score_all.' + script_extension
-  process = subprocess.run(process_name)
+  args = list(process_name)
+  process = subprocess.Popen( args )
+  script_handler( process )
   os.chdir( '..' )
 
   return None
