@@ -136,7 +136,8 @@ def script_handler( args ):
   handle = subprocess.Popen( args,
                              bufsize            = 1,
                              stdin              = subprocess.PIPE,
-                             stdout             = subprocess.PIPE,
+                             stdout             = subprocess.DEVNULL, 
+                             #stdout             = subprocess.PIPE,
                              stderr             = subprocess.STDOUT,
                              universal_newlines = True
                              #text   = True #python 3.7+, uni-NewLine has same effect
