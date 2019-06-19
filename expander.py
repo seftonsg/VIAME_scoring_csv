@@ -108,8 +108,8 @@ def make_scripts( img_names, args ):
   script_extension = args.script.split('.')[-1]
   tre = re.compile('SET TRUTHS=.*')
   cre = re.compile('SET TRACKS=.*')
-  with open(args.script) as s:
-    for i in img_names:
+  for i in img_names:
+    with open(args.script) as s:
       os.chdir(i)
       with open('score_' + i + '.' + script_extension, 'w' ) as o:
         for l in s:
@@ -119,6 +119,7 @@ def make_scripts( img_names, args ):
             l='SET TRACKS=computed_' + i + '.csv\n'
           o.write(l)
       os.chdir( '..' )
+  with open(args.script) as s: 
     os.chdir( 'all' )
     with open('score_all.' + script_extension, 'w') as o:
       for l in s:
