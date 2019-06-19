@@ -131,54 +131,36 @@ def make_scripts( img_names, args ):
       os.chdir( '..' )
   return None
 
-def script_handler( handle ):
-  dre  = re.compile('Press any key to continue')
-  done = False
-  while not done:
-    try:
-      sout, serr = handle.communicate( timeout=1 )
-      sout = sout.split("\n")
-      for o in sout:
-        print( o )
-        if dre.match(o):
-          done = True
-          print('done')
-          #os.stdin.write('c')
+def script_handler( args ):
+  process_name = args.split(' ')[0]
+  print( 'About to run: ' + process_name + ' in ' + os.getcwd())
+  print(args)
+  handle = subprocess.Popen( args,
+                             bufsize            = 1,
+                             stdin              = subprocess.PIPE,
+                             stdout             = subprocess.PIPE,
+                             stderr             = subprocess.STDOUT,
+                             universal_newlines = True
+                             #text   = True #python 3.7+ 
+                             #encoding = not sure how to use this arg 
+                                  )
+        
+  handle.stdin.write('\n')
+  handle.wait()
+  print("Done: " + os.getcwd())
+  print(handle.returncode)
 
-    except subprocess.TimeoutExpired:
-      print("timeout exception")
-
-  handle.kill()
-
-  return None
+  return handle.returncode
 
 def run_scripts( img_names, args ):
   script_extension = args.script.split('.')[-1]
   for i in img_names:
     os.chdir(i)
-    success = False
-    while not success:
-      process_name = 'score_' + i + '.' + script_extension
-      args = process_name #shlex.split(process_name + "")
-      try:
-        print( 'About to run: ' + process_name + ' in ' + os.getcwd())
-        print(args)
-        process = subprocess.Popen( args,
-                                    stdin              = subprocess.PIPE,
-                                    stdout             = subprocess.PIPE,
-                                    stderr             = subprocess.PIPE,
-                                    universal_newlines = True
-                                    #text   = True #python 3.7+ 
-                                    #encoding = not sure how to use this arg 
-                                  )
-        script_handler( process )
-        success = True
-      except OSError as e:
-        print("OSError: " + repr(e))
-        process.kill()
 
-    process.kill()
-    print(process.returncode)
+    process_name = 'score_' + i + '.' + script_extension
+    args = process_name #shlex.split(process_name + "")
+    script_handler( args )
+
     os.chdir( '..' )
 
   while True:
@@ -186,9 +168,8 @@ def run_scripts( img_names, args ):
 
   os.chdir( 'all' )
   process_name = 'score_all.' + script_extension
-  args = list(process_name)
-  process = subprocess.Popen( args )
-  script_handler( process )
+  args = process_name #shlex.split(process_name + "")
+  script_handler( args )
   os.chdir( '..' )
 
   return None
