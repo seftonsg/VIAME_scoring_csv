@@ -5,6 +5,7 @@ import re
 import sys
 import shutil
 import argparse
+import subprocess
 
 
 def get_imgs( directory ):
@@ -25,7 +26,7 @@ def ltos( l ):
   w=""
   for i in l:
     w += str(i) + ','
-  return w
+  return w[:-1]
 
 def create_subtrack_files( img_names, args ):
   with open( args.truth ) as t:
@@ -93,7 +94,6 @@ def make_dir_tree( img_names, newdir ):
 
   return None
 
-
 def copy_vitals( args ):
   shutil.copyfile(   args.script, args.output +     '/' +        args.script)
   shutil.copyfile(    args.truth, args.output +     '/' +         args.truth)
@@ -117,6 +117,8 @@ def make_scripts( img_names, args ):
           if cre.match(l):
             l='SET TRACKS=computed_' + i + '.csv\n'
           o.write(l)
+      os.chdir( '..' )
+    os.chdir( 'all' )
     with open('score_all.' + script_extension, 'w') as o:
       for l in s:
           if tre.match(l):
@@ -129,6 +131,20 @@ def make_scripts( img_names, args ):
 
   return None
 
+def run_scripts( img_names, args ):
+  script_extension = args.script.split('.')[-1]
+  for i in img_names:
+    os.chdir(i)
+    process_name = 'score_' + i + '.' + script_extension
+    process = subprocess.run(process_name)
+    os.chdir( '..' )
+
+  os.chdir( 'all' )
+  process_name = 'score_all.' + script_extension
+  process = subprocess.run(process_name)
+  os.chdir( '..' )
+
+  return None
 
 
 if __name__ == "__main__":
@@ -188,8 +204,9 @@ if __name__ == "__main__":
 
   #make the scripts
   make_scripts( img_names, args )
+  run_scripts(  img_names, args )
   os.chdir( '..' )
-  
-  print(img_names)
+
+  print( 'Done' )
   #create a new computed file for each image
   #don't forget the "all" directory
