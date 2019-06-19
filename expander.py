@@ -134,14 +134,13 @@ def make_scripts( img_names, args ):
 def script_handler( args ):
   process_name = args.split(' ')[0]
   print( 'About to run: ' + process_name + ' in ' + os.getcwd())
-  print(args)
   handle = subprocess.Popen( args,
                              bufsize            = 1,
                              stdin              = subprocess.PIPE,
                              stdout             = subprocess.PIPE,
                              stderr             = subprocess.STDOUT,
                              universal_newlines = True
-                             #text   = True #python 3.7+ 
+                             #text   = True #python 3.7+, uni-NewLine has same effect
                              #encoding = not sure how to use this arg 
                                   )
         
@@ -156,15 +155,10 @@ def run_scripts( img_names, args ):
   script_extension = args.script.split('.')[-1]
   for i in img_names:
     os.chdir(i)
-
     process_name = 'score_' + i + '.' + script_extension
     args = process_name #shlex.split(process_name + "")
     script_handler( args )
-
     os.chdir( '..' )
-
-  while True:
-    time.sleep(10)
 
   os.chdir( 'all' )
   process_name = 'score_all.' + script_extension
