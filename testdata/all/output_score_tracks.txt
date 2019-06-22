@@ -1,0 +1,7 @@
+INFO: Could not load default logger factory. Using built-in logger.
+2019-06-21 17:57:37.210 INFO score_tracks.cxx(496): GIT-HASH: output not supported yet
+2019-06-21 17:57:37.213 INFO score_tracks.cxx(542): Command line:
+2019-06-21 17:57:37.213 INFO score_tracks.cxx(542): score_tracks.exe --hadwav --computed-format noaa-csv --truth-format noaa-csv --fn2ts --computed-tracks computed_18ZC5064.csv --truth-tracks truth_18ZC5064.csv 
+2019-06-21 17:57:37.218 INFO score_tracks_loader.cxx(866): About to load file '1 of 1 (forced format noaa-csv) : truth_18ZC5064.csv ...
+2019-06-21 17:57:37.220 ERROR score_tracks_loader.cxx(869): Couldn't load tracks from 'truth_18ZC5064.csv'
+2019-06-21 17:57:37.221 INFO score_tracks_loader.cxx(1233): No truth tracks; score_tracks_loader returning false
