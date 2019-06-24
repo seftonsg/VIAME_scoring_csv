@@ -1,7 +1,51 @@
 INFO: Could not load default logger factory. Using built-in logger.
-2019-06-21 17:57:37.210 INFO score_tracks.cxx(496): GIT-HASH: output not supported yet
-2019-06-21 17:57:37.213 INFO score_tracks.cxx(542): Command line:
-2019-06-21 17:57:37.213 INFO score_tracks.cxx(542): score_tracks.exe --hadwav --computed-format noaa-csv --truth-format noaa-csv --fn2ts --computed-tracks computed_18ZC5064.csv --truth-tracks truth_18ZC5064.csv 
-2019-06-21 17:57:37.218 INFO score_tracks_loader.cxx(866): About to load file '1 of 1 (forced format noaa-csv) : truth_18ZC5064.csv ...
-2019-06-21 17:57:37.220 ERROR score_tracks_loader.cxx(869): Couldn't load tracks from 'truth_18ZC5064.csv'
-2019-06-21 17:57:37.221 INFO score_tracks_loader.cxx(1233): No truth tracks; score_tracks_loader returning false
+2019-06-21 17:57:19.446 INFO score_tracks.cxx(496): GIT-HASH: output not supported yet
+2019-06-21 17:57:19.449 INFO score_tracks.cxx(542): Command line:
+2019-06-21 17:57:19.449 INFO score_tracks.cxx(542): score_tracks.exe --hadwav --computed-format noaa-csv --truth-format noaa-csv --fn2ts --computed-tracks computed_18ZC4773.csv --truth-tracks truth_18ZC4773.csv 
+2019-06-21 17:57:19.457 INFO score_tracks_loader.cxx(866): About to load file '1 of 1 (forced format noaa-csv) : truth_18ZC4773.csv ...
+2019-06-21 17:57:19.460 INFO score_tracks_loader.cxx(884): read 101 tracks
+2019-06-21 17:57:19.461 INFO score_tracks_loader.cxx(866): About to load file '1 of 1 (forced format noaa-csv) : computed_18ZC4773.csv ...
+2019-06-21 17:57:19.463 INFO score_tracks_loader.cxx(884): read 90 tracks
+2019-06-21 17:57:19.464 INFO score_tracks_loader.cxx(225): frame-number-to-timestamp for truth_18ZC4773.csv: promoted 101 of 101 frames
+2019-06-21 17:57:19.464 INFO score_tracks_loader.cxx(225): frame-number-to-timestamp for computed_18ZC4773.csv: promoted 90 of 90 frames
+2019-06-21 17:57:19.465 INFO score_tracks.cxx(437): Normalization: no AOI set; frame FAR normalization disabled
+2019-06-21 17:57:19.465 INFO score_tracks.cxx(443): Info: --norm-data-time not set; frame FAR normalization disabled
+2019-06-21 17:57:19.466 INFO score_phase1.cxx(956): Adding quickfilter boxes to 101 truth tracks...
+2019-06-21 17:57:19.466 INFO score_phase1.cxx(958): Adding quickfilter boxes to 90 computed tracks...
+2019-06-21 17:57:19.467 INFO score_phase1.cxx(964): phase 1: 0 of 101...
+2019-06-21 17:57:19.468 INFO score_phase1.cxx(964): phase 1: 10 of 101...
+2019-06-21 17:57:19.468 INFO score_phase1.cxx(964): phase 1: 20 of 101...
+2019-06-21 17:57:19.469 INFO score_phase1.cxx(964): phase 1: 30 of 101...
+2019-06-21 17:57:19.470 INFO score_phase1.cxx(964): phase 1: 40 of 101...
+2019-06-21 17:57:19.470 INFO score_phase1.cxx(964): phase 1: 50 of 101...
+2019-06-21 17:57:19.471 INFO score_phase1.cxx(964): phase 1: 60 of 101...
+2019-06-21 17:57:19.471 INFO score_phase1.cxx(964): phase 1: 70 of 101...
+2019-06-21 17:57:19.472 INFO score_phase1.cxx(964): phase 1: 80 of 101...
+2019-06-21 17:57:19.473 INFO score_phase1.cxx(964): phase 1: 90 of 101...
+2019-06-21 17:57:19.474 INFO score_phase1.cxx(964): phase 1: 100 of 101...
+2019-06-21 17:57:19.474 INFO score_tracks.cxx(620): p1: AOI kept 101 of 101 truth tracks; 90 of 90 computed tracks
+2019-06-21 17:57:19.475 INFO score_phase2_hadwav.cxx(464): n-gt-detections: 101
+2019-06-21 17:57:19.475 INFO score_phase2_hadwav.cxx(465): n-comp-detections: 90
+2019-06-21 17:57:19.475 INFO score_phase2_hadwav.cxx(466): n-gt-frames:  1
+2019-06-21 17:57:19.476 INFO score_phase2_hadwav.cxx(467): n-comp-frames: 2
+2019-06-21 17:57:19.476 INFO score_phase2_hadwav.cxx(468): n-comp-frames-unique-match: 1
+2019-06-21 17:57:19.476 INFO score_phase2_hadwav.cxx(469): n-comp-frames-no-match: 1
+2019-06-21 17:57:19.476 INFO score_phase2_hadwav.cxx(470): n-comp-frames-outside-aoi: 0
+2019-06-21 17:57:19.476 INFO score_tracks.cxx(678): p2...
+2019-06-21 17:57:19.477 INFO score_phase3_hadwav.cxx(122): CP (track) avg over 90
+2019-06-21 17:57:19.477 INFO score_phase3_hadwav.cxx(138): CP (target) avg over 90
+2019-06-21 17:57:19.477 INFO score_phase3_hadwav.cxx(159): t2t.c2t is 90
+2019-06-21 17:57:19.478 INFO score_phase3_hadwav.cxx(173): trackPD: 89 / 101
+2019-06-21 17:57:19.478 INFO score_phase3_hadwav.cxx(175): trackFA: 12
+HADWAV Scoring Results:
+  Detection-Pd: 0.881188
+  Detection-FA: 12
+  Detection-PFA: 0.133333
+  Frame-NFAR: not computed
+  Track-Pd: 0.881188
+  Track-FA: 12
+  Computed-track-PFA: 0.133333
+  Track-NFAR: not computed
+  Avg track (continuity, purity ): 2.71795, 1
+  Avg target (continuity, purity ): 2.09901, 0.881188
+  Track-frame-precision: 0.5
