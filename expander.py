@@ -111,6 +111,7 @@ def make_dir_tree( img_names, newdir ):
   for i in img_names:
     os.mkdir( i )
   os.mkdir( 'all ' )
+  os.mkdir( 'results' )
   os.chdir( '..' )
 
   return None
@@ -189,7 +190,7 @@ def run_scripts( img_names, args ):
 
   return None
 
-def print_human_results( score, destination, wipe=False ):
+def print_human_results( score, roc, destination, wipe=False ):
   #Define a variable for the amount of data printed?
   #Make sure to append, or wipe clean
   #Takes full directory-like objects
@@ -220,15 +221,24 @@ def print_human_results( score, destination, wipe=False ):
       if rex_FA.search(l):
         n_FA = int(l[16:])
 
-
+  with open( roc ) as r:
+    l = r.read(256).split(';')
+    n_TP = l[4][5:]
+    n_FP = l[5][5:]
+    n_TN = l[6][5:]
+    n_FN = l[7][5:]
 
   with open( destination, 'a' ) as d:
     d.write( '\n' + '-'*40 + '\n' )
     d.write('Data for ' + score.parts[-2] + ':\n' )
-    d.write(f'{"  # Computed Detections ":=<30}> {n_detComp:<10}' + '\n')
-    d.write(f'{"  # True Detections ":=<30}> {n_detTrue:<10}' + '\n')
+    d.write( f'{"  # Computed Detections ":=<30}> {n_detComp:<10}' + '\n')
+    d.write( f'{"  # True Detections ":=<30}> {n_detTrue:<10}' + '\n')
     d.write('\n')
-    d.write( f'{"  # False Positives ":=<30}> {n_FA:<10}' + '\n' )
+    d.write( f'{"  # True  Positives (TP) ":=<30}> {n_TP:<10}' + '\n')
+    d.write( f'{"  # False Positives (FP) ":=<30}> {n_FP:<10}' + '\n')
+    d.write( f'{"  # True  Negatives (TN) ":=<30}> {n_TN:<10}' + '\n')
+    d.write( f'{"  # False Negatives (FN) ":=<30}> {n_FN:<10}' + '\n')
+    #d.write( f'{"  # False Positives ":=<30}> {n_FA:<10}' + '\n' )
     d.write('\n')
     d.write( f'{"  P {True Positive} ":=<30}> {p_TP:<10.5f}' + '\n' )
     d.write( f'{"  P {False Positive} ":=<30}> {p_FP:<10.5f}' + '\n' )
@@ -239,21 +249,22 @@ def print_human_results( score, destination, wipe=False ):
 
 
 def get_results( img_names, args ):
-  #Assumes running from the base dir
-  cwd = os.getcwd()
+  print(args.res_file)
   roc_path = args.output / 'all' / 'output_roc.txt'
   out_path = args.output / 'all' / 'output_score_tracks.txt'
-  hum_path = args.output / args.res_file
-  csv_path = args.output / args.res_csv
+  com_path = args.output / 'all' / 'computed_all.csv'
+  hum_path = args.output / 'results' / args.res_file
+  csv_path = args.output / 'results' / args.res_csv
+
   #Do 'all' first
-  print_human_results( out_path, hum_path, True )
+  print_human_results( out_path, roc_path, hum_path, True )
       #1: get human-readable data and print to args.res_file=
 
   for i in img_names:
     roc_path = args.output / i / 'output_roc.txt'
     out_path = args.output / i / 'output_score_tracks.txt'
-    print_human_results( out_path, hum_path )
-
+    com_path = args.output / i / ('computed_' + i + '.csv')
+    print_human_results( out_path, roc_path, hum_path )
 
 
   return None
@@ -317,8 +328,8 @@ if __name__ == "__main__":
   args.computed = make_pure_path( args.computed )
   args.images   = make_pure_path(   args.images ) 
   args.output   = make_pure_path(   args.output )
-  args.res_file = make_pure_path( args.res_file )
-  args.res_csv  = make_pure_path(  args.res_csv )
+  #args.res_file = make_pure_path( args.res_file )
+  #args.res_csv  = make_pure_path(  args.res_csv )
 
   #get the names of the images
   img_names = get_imgs( args.images )
@@ -339,8 +350,8 @@ if __name__ == "__main__":
   ###run_scripts(  img_names, args )
   ###os.chdir( '..' )
 
+  get_results( img_names, args )
 
-
-  print( 'Done' )
+  print( 'Done\n' )
   #create a new computed file for each image
   #don't forget the "all" directory
