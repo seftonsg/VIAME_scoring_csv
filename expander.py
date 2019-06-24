@@ -126,16 +126,16 @@ def copy_vitals( args ):
 def make_scripts( img_names, args ):
   #TODO: not compatable with Matt's scripts.  custom script only
   script_extension = args.script.split('.')[-1]
-  tre = re.compile('SET TRUTHS=.*')
-  cre = re.compile('SET TRACKS=.*')
+  rex_t = re.compile('SET TRUTHS=.*')
+  rex_c = re.compile('SET TRACKS=.*')
   for i in img_names:
     with open(args.script) as s:
       os.chdir(i)
       with open('score_' + i + '.' + script_extension, 'w' ) as o:
         for l in s:
-          if tre.match(l):
+          if rex_t.match(l):
             l='SET TRUTHS=truth_' + i + '.csv\n'
-          if cre.match(l):
+          if rex_c.match(l):
             l='SET TRACKS=computed_' + i + '.csv\n'
           o.write(l)
       os.chdir( '..' )
@@ -143,10 +143,10 @@ def make_scripts( img_names, args ):
     os.chdir( 'all' )
     with open('score_all.' + script_extension, 'w') as o:
       for l in s:
-          if tre.match(l):
-            l='SET TRUTHS=truth_' + i + '.csv\n'
-          if cre.match(l):
-            l='SET TRACKS=computed_' + i + '.csv\n'
+          if rex_t.match(l):
+            l='SET TRUTHS=truth_all.csv\n'
+          if rex_c.match(l):
+            l='SET TRACKS=computed_all.csv\n'
           o.write(l)
       os.chdir( '..' )
   return None
@@ -193,6 +193,8 @@ def run_scripts( img_names, args ):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser( description = 'Creates scoring directories by the image' )
 
+  print('\n')
+
   # Inputs
   parser.add_argument( '-truth', default=None,
              help='Input filename for groundtruth file.' )
@@ -220,9 +222,9 @@ if __name__ == "__main__":
     print( 'Error: images directory must be specified' )
     sys.exit( 0 )
 
-  if not args.script:
-    print( 'Error: a running script must be specified' )
-    sys.exit( 0 )
+  #if not args.script:
+  #  print( 'Error: a running script must be specified' )
+  #  sys.exit( 0 )
   if args.script and not os.path.exists(args.script): #can I raise an exception here?
     print( 'Error: specified script scoring file does not exist' )
     sys.exit( 0 )
@@ -230,6 +232,14 @@ if __name__ == "__main__":
   if os.path.exists(args.output):
     print( 'Warning: directory already exists and will be overwritten' )
 
+  cwd = os.getcwd()
+
+  args.truth    = make_pure_path(    args.truth )
+  args.computed = make_pure_path( args.computed )
+  args.images   = make_pure_path(   args.images ) 
+  args.output   = make_pure_path(   args.output )
+  args.res_file = make_pure_path( args.res_file )
+  args.res_csv  = make_pure_path(  args.res_csv )
 
   #get the names of the images
   img_names = get_imgs( args.images )
