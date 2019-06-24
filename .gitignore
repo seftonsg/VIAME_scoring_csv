@@ -2,3 +2,5 @@
 *.JPG
 1c*
 exp/*
+results.txt
+.DS_Store
