@@ -37,10 +37,10 @@ def get_imgs( directory ):
   elif directory.suffix == '.txt':
     with open( directory ) as d:
       for l in d:
-        l.strip()
-        if len(l) == 0 or l[0] == '#':
+        l = l.strip().split('.')
+        if len(l[0]) == 0 or l[0][0] == '#':
           continue
-        img_names.append(l)
+        img_names.append(l[0])
 
   return img_names
 
@@ -189,6 +189,74 @@ def run_scripts( img_names, args ):
 
   return None
 
+def print_human_results( score, destination, wipe=False ):
+  #Define a variable for the amount of data printed?
+  #Make sure to append, or wipe clean
+  #Takes full directory-like objects
+  if wipe and os.path.exists( destination ):
+    os.remove( destination )
+
+  #Parentheticals are group(1) of re.search(l)
+  rex_PD    = re.compile(      'Detection-Pd: (.*)' )
+  rex_FA    = re.compile(      'Detection-FA: (.*)' )
+  rex_PFA   = re.compile(     'Detection-PFA: (.*)' )
+  rex_TrDet = re.compile(   'n-gt-detections: (.*)' )
+  rex_CoDet = re.compile( 'n-comp-detections: (.*)' )
+
+  with open( score ) as s:
+    for l in s:
+      if rex_TrDet.search(l):
+        n_detTrue = int(rex_TrDet.search(l).group(1))
+      if rex_CoDet.search(l):
+        n_detComp = rex_CoDet.search(l).group(1)
+
+      if rex_PD.search(l):
+        p_TP = float(rex_PD.search(l).group(1))
+      if rex_PFA.search(l):
+        p_FP = float(rex_PFA.search(l).group(1))
+      #if rex_PTN.search(l):
+      #if rex_PFN.search(l):
+      
+      if rex_FA.search(l):
+        n_FA = int(l[16:])
+
+
+
+  with open( destination, 'a' ) as d:
+    d.write( '\n' + '-'*40 + '\n' )
+    d.write('Data for ' + score.parts[-2] + ':\n' )
+    d.write(f'{"  # Computed Detections ":=<30}> {n_detComp:<10}' + '\n')
+    d.write(f'{"  # True Detections ":=<30}> {n_detTrue:<10}' + '\n')
+    d.write('\n')
+    d.write( f'{"  # False Positives ":=<30}> {n_FA:<10}' + '\n' )
+    d.write('\n')
+    d.write( f'{"  P {True Positive} ":=<30}> {p_TP:<10.5f}' + '\n' )
+    d.write( f'{"  P {False Positive} ":=<30}> {p_FP:<10.5f}' + '\n' )
+      #print("none")
+  return None
+
+
+
+
+def get_results( img_names, args ):
+  #Assumes running from the base dir
+  cwd = os.getcwd()
+  roc_path = args.output / 'all' / 'output_roc.txt'
+  out_path = args.output / 'all' / 'output_score_tracks.txt'
+  hum_path = args.output / args.res_file
+  csv_path = args.output / args.res_csv
+  #Do 'all' first
+  print_human_results( out_path, hum_path, True )
+      #1: get human-readable data and print to args.res_file=
+
+  for i in img_names:
+    roc_path = args.output / i / 'output_roc.txt'
+    out_path = args.output / i / 'output_score_tracks.txt'
+    print_human_results( out_path, hum_path )
+
+
+
+  return None
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser( description = 'Creates scoring directories by the image' )
@@ -208,6 +276,17 @@ if __name__ == "__main__":
   # Outputs
   parser.add_argument( '-output', default='exp',
              help='Output directory for expanded folders.')
+  parser.add_argument( '-res_file', default='results.txt',
+             help='Specify a human-readable results txt file.')
+  parser.add_argument( '-res_csv', default='stats.csv',
+             help='Specify the csv file with calculated statistics.')
+  parser.add_argument( '-csv_by_file', default=None,
+             help='If true, CSV files will be created per image, not combined to one file.')
+
+  # Configs?
+  #overlap
+  #pixel overlap ratio stuff?
+  #etc...
 
   args = parser.parse_args()
 
