@@ -8,18 +8,39 @@ import argparse
 import subprocess
 import shlex      #shell tokenizer
 import time       #for sleep
+import pathlib
+
+def make_pure_path( loc ):
+  ret = None
+
+  if not loc:
+    return None
+
+  if not pathlib.PurePath( loc ).is_absolute():
+    ret = pathlib.PurePath( os.getcwd(), loc )
+  else:
+    ret = pathlib.PurePath(loc)
+  return ret
+
 
 def get_imgs( directory ):
-
   img_names = []
 
-  for l in os.listdir(directory):
-    l = l.strip().split('.')
-    if len( l[0] ) > 0 and l[0][0] == '#':
-      continue
-    if len( l[0] ) == 0:
-      continue
-    img_names.append(l[0])
+  if not directory.suffix:
+    for l in os.listdir( directory ):
+      l = l.strip().split('.')
+      if len( l[0] ) > 0 and l[0][0] == '#':
+        continue
+      if len( l[0] ) == 0:
+        continue
+      img_names.append(l[0])
+  elif directory.suffix == '.txt':
+    with open( directory ) as d:
+      for l in d:
+        l.strip()
+        if len(l) == 0 or l[0] == '#':
+          continue
+        img_names.append(l)
 
   return img_names
 
