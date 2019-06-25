@@ -265,7 +265,7 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
     os.remove( destination )
 
   table = []
-  #Image, Name, Confidence, TP, FP, TN, FN, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
+  #Image, Name, Confidence, T, F, None, None ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
 
   with open(roc) as r:
     previous = [None] *11
@@ -279,8 +279,8 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
       entry[ 2] = [conf]
       entry[ 3] = 0
       entry[ 4] = 0
-      entry[ 5] = 0
-      entry[ 6] = 0
+      #entry[ 5] = 0
+      #entry[ 6] = 0
       entry[ 7] = int(l[4][5:])
       entry[ 8] = int(l[5][5:])
       entry[ 9] = int(l[6][5:])
@@ -289,35 +289,23 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
 
       if not previous[0]:
       #Check if TP, FP, etc.
-        tpdiff = 0
-        fpdiff = 0
-        tndiff = 0
-        fndiff = 0
+        d_truth = 0
+        d_false = 0
       else:
-        tpdiff = previous[ 7] - entry[ 7]
-        fpdiff = previous[ 8] - entry[ 8]
-        #tndiff = table[-1][ 9] - entry[ 9]
-        #fndiff = table[-1][10] - entry[10]
-      while tpdiff > 0 or fpdiff > 0: #or tndiff > 0 or fndiff > 0:
+        d_truth = previous[ 7] - entry[ 7]
+        d_false = previous[ 8] - entry[ 8]
+      while d_truth > 0 or d_false > 0: #or tndiff > 0 or fndiff > 0:
         tmp = entry.copy()
-        tmp[9] = tpdiff
-        tmp[10] = fpdiff
-        if tpdiff > 0:
-          if tpdiff > 1:
-            tmp [3]  = 1
-            tmp [7] += tpdiff
-          else:
-            tmp [3]  = 1
-            tmp [7] += 1
-          tpdiff -= 1
-        elif fpdiff > 0:
-          if fpdiff > 1:
-            tmp [4]  = 1
-            tmp [8] += fpdiff
-          else:
-            tmp [4]  = 1
-            tmp [8] += 1
-          fpdiff -= 1
+        if d_truth > 0:  #true
+          tmp [ 3]  = 1
+          tmp [ 7] += d_truth
+          tmp [10] -= d_truth #decriment FN counter=
+          d_truth  -= 1
+        elif d_false > 0: #false
+          tmp [ 4]  = 1
+          tmp [ 8] += d_false
+          tmp [ 9] -= d_false #decriment TN counter
+          d_false  -= 1
         table += [tmp]
 
       #table += [entry]
