@@ -338,17 +338,6 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
     print("\n\n\n")
 
   return table
-'''
-  if dictionary:
-        name = ''
-        for i in range(len(dictionary)):
-          if dictionary[i][0] == conf:
-            name = [dictionary[i][1]]
-            del dictionary[i]
-            break
-        entry += name
-      else:
-        entry += ['none']'''
 
 def get_results( img_names, args ):
   print(args.res_file)
@@ -369,6 +358,12 @@ def get_results( img_names, args ):
     print_human_results( out_path, roc_path, hum_path )
     d = make_confidence_name_table( com_path )
     make_result_csv( out_path, roc_path, csv_path, d )
+  roc_path = args.output / 'all' / 'output_roc.txt'
+  out_path = args.output / 'all' / 'output_score_tracks.txt'
+  com_path = args.output / 'all' / ('computed_all.csv')
+  print_human_results( out_path, roc_path, hum_path )
+  d = make_confidence_name_table( com_path )
+  make_result_csv( out_path, roc_path, csv_path, d )
 
 
   return None
@@ -440,20 +435,20 @@ if __name__ == "__main__":
   img_names = get_imgs( args.images )
 
   #create directory tree
-  make_dir_tree( img_names, args.output )
+  ###make_dir_tree( img_names, args.output )
 
   #copy over vital files
-  copy_vitals( args )
+  ###copy_vitals( args )
 
   #create a new truth file for each image
-  os.chdir(args.output)
-  create_subtrack_files( img_names, args )
-  move_subtrack_files(   img_names, args )
+  ###os.chdir(args.output)
+  ###create_subtrack_files( img_names, args )
+  ###move_subtrack_files(   img_names, args )
 
   #make the scripts
-  make_scripts( img_names, args )
-  run_scripts(  img_names, args )
-  os.chdir( '..' )
+  ###make_scripts( img_names, args )
+  ###run_scripts(  img_names, args )
+  ###os.chdir( '..' )
 
   get_results( img_names, args )
 
