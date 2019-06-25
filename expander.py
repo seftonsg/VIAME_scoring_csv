@@ -117,16 +117,16 @@ def make_dir_tree( img_names, newdir ):
   return None
 
 def copy_vitals( args ):
-  shutil.copyfile(   args.script, args.output +     '/' +        args.script)
-  shutil.copyfile(    args.truth, args.output +     '/' +         args.truth)
-  shutil.copyfile( args.computed, args.output +     '/' +      args.computed)
-  shutil.copyfile(    args.truth, args.output + '/all/' +    'truth_all.csv')
-  shutil.copyfile( args.computed, args.output + '/all/' + 'computed_all.csv')
+  shutil.copyfile(   args.script, args.output /        args.script.name)
+  shutil.copyfile(    args.truth, args.output /         args.truth.name)
+  shutil.copyfile( args.computed, args.output /      args.computed.name)
+  shutil.copyfile(    args.truth, args.output / 'all' /    'truth_all.csv')
+  shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
   return None
 
 def make_scripts( img_names, args ):
   #TODO: not compatable with Matt's scripts.  custom script only
-  script_extension = args.script.split('.')[-1]
+  script_extension = args.script.name.split('.')[-1]
   rex_t = re.compile('SET TRUTHS=.*')
   rex_c = re.compile('SET TRACKS=.*')
   for i in img_names:
@@ -153,7 +153,7 @@ def make_scripts( img_names, args ):
   return None
 
 def script_handler( args ):
-  process_name = args.split(' ')[0]
+  process_name = str(args)
   print( 'About to run: ' + process_name + ' in ' + os.getcwd())
   handle = subprocess.Popen( args,
                              bufsize            = 1,
@@ -174,16 +174,19 @@ def script_handler( args ):
   return handle.returncode
 
 def run_scripts( img_names, args ):
-  script_extension = args.script.split('.')[-1]
+  script_extension = args.script.suffix
+  print('TODO: Purepath on scripts')
   for i in img_names:
     os.chdir(i)
-    process_name = 'score_' + i + '.' + script_extension
+    #TODO: does not send purepaths. 
+    process_name = 'score_' + i +  script_extension
     args = process_name #shlex.split(process_name + "")
     script_handler( args )
     os.chdir( '..' )
 
   os.chdir( 'all' )
-  process_name = 'score_all.' + script_extension
+  #TODO: does not send purepaths. 
+  process_name = 'score_all' + script_extension
   args = process_name #shlex.split(process_name + "")
   script_handler( args )
   os.chdir( '..' )
@@ -429,6 +432,7 @@ if __name__ == "__main__":
   args.computed = make_pure_path( args.computed )
   args.images   = make_pure_path(   args.images ) 
   args.output   = make_pure_path(   args.output )
+  args.script   = make_pure_path(   args.script )
   #args.res_file = make_pure_path( args.res_file )
   #args.res_csv  = make_pure_path(  args.res_csv )
 
