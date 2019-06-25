@@ -245,6 +245,20 @@ def print_human_results( score, roc, destination, wipe=False ):
       #print("none")
   return None
 
+def make_confidence_name_table( computed ):
+  table = []
+  #confidence to #, or to coordinates?
+  with open( computed ) as c:
+    for l in c:
+      l = l.strip().split(',')
+      if len(l[0]) > 0 and l[0][0] == '#':
+        continue
+      if len(l[0]) == 0:
+        continue
+      entry = [(float(l[10]), l[0])]
+      table += entry
+  
+  return table
 
 
 
