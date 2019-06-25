@@ -265,7 +265,7 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
     os.remove( destination )
 
   table = []
-  #Image, Name, Confidence, T, F, None, None ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
+  #Image, Name, Confidence, T, F, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
 
   with open(roc) as r:
     previous = [None] *11
@@ -279,12 +279,10 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
       entry[ 2] = [conf]
       entry[ 3] = 0
       entry[ 4] = 0
-      #entry[ 5] = 0
-      #entry[ 6] = 0
-      entry[ 7] = int(l[4][5:])
+      entry[ 5] = int(l[4][5:])
+      entry[ 6] = int(l[5][5:])
+      entry[ 7] = int(l[6][5:])
       entry[ 8] = int(l[5][5:])
-      entry[ 9] = int(l[6][5:])
-      entry[10] = int(l[7][5:])
 
 
       if not previous[0]:
@@ -292,19 +290,19 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
         d_truth = 0
         d_false = 0
       else:
-        d_truth = previous[ 7] - entry[ 7]
-        d_false = previous[ 8] - entry[ 8]
+        d_truth = previous[ 5] - entry[ 5]
+        d_false = previous[ 6] - entry[ 6]
       while d_truth > 0 or d_false > 0: #or tndiff > 0 or fndiff > 0:
         tmp = entry.copy()
         if d_truth > 0:  #true
           tmp [ 3]  = 1
-          tmp [ 7] += d_truth
-          tmp [10] -= d_truth #decriment FN counter=
+          tmp [ 5] += d_truth
+          tmp [ 8] -= d_truth #decriment FN counter=
           d_truth  -= 1
         elif d_false > 0: #false
           tmp [ 4]  = 1
-          tmp [ 8] += d_false
-          tmp [ 9] -= d_false #decriment TN counter
+          tmp [ 6] += d_false
+          tmp [ 7] -= d_false #decriment TN counter
           d_false  -= 1
         table += [tmp]
 
@@ -318,8 +316,6 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
     for i in table:
       print(i)
     print("\n\n\n")
-    #print('Dictionary Failures:' + str(len(dictionary)))
-    #print(dictionary)
 
   return None
 '''
