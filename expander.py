@@ -268,21 +268,22 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
   #Image, Name, Confidence, T, F, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
 
   with open(roc) as r:
-    previous = [None] *11
+    previous = [None] * 11
     for l in r:
       l = l.strip().split(';')
       conf = float(l[0][16:])
 
-      entry = [None] *11#13
+      #TODO: convert to enumerated?  dictionary-like?
+      entry = [None] * 11
       entry[ 0] = [score.parts[-2]]
       #entry += [conf]
-      entry[ 2] = [conf]
+      entry[ 2] = conf
       entry[ 3] = 0
       entry[ 4] = 0
       entry[ 5] = int(l[4][5:])
       entry[ 6] = int(l[5][5:])
       entry[ 7] = int(l[6][5:])
-      entry[ 8] = int(l[5][5:])
+      entry[ 8] = int(l[7][5:])
 
 
       if not previous[0]:
@@ -303,21 +304,37 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
           tmp [ 4]  = 1
           tmp [ 6] += d_false
           tmp [ 7] -= d_false #decriment TN counter
+          #tmp [7] -= 1
           d_false  -= 1
         table += [tmp]
-
-      #table += [entry]
       previous = entry.copy()
 
+    table = table[::-1]
+    #Match the conf levels to the annotation name. Picks largest that is < conf
+    #It would be fastest to sort the dictionary list then do a 1:1 match.  No double loop needed
+    if dictionary:
+        for e in table:
+          idx = 0
+          best = (0,0)
+          for i in range(len(dictionary)):
+            if dictionary[i][0] < e[2]:
+              if dictionary[i][0] > best[0]:
+                best = dictionary[i]
+                idx = i
+          e[1] = best[1]
+          e[2] = best[0]
+          del dictionary[idx]
+    
 
-      #table += [entry]
-
-    #print(table)
     for i in table:
+      print(i)
+    print(' Table Len: ' + str(len(table)))
+    print(' Unused Dict (' + str(len(dictionary)) + '): ')
+    for i in dictionary:
       print(i)
     print("\n\n\n")
 
-  return None
+  return table
 '''
   if dictionary:
         name = ''
