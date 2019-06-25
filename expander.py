@@ -260,7 +260,99 @@ def make_confidence_name_table( computed ):
   
   return table
 
+def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
+  if wipe and os.path.exists( destination ):
+    os.remove( destination )
 
+  table = []
+  #Image, Name, Confidence, TP, FP, TN, FN, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
+
+  with open(roc) as r:
+    for l in r:
+      l = l.strip().split(';')
+      conf = float(l[0][16:])
+
+      entry = [None] *11#13
+      entry[ 0] = [score.parts[-2]]
+      #entry += [conf]
+      entry[ 2] = [conf]
+      entry[ 3] = 0
+      entry[ 4] = 0
+      entry[ 5] = 0
+      entry[ 6] = 0
+      entry[ 7] = int(l[4][5:])
+      entry[ 8] = int(l[5][5:])
+      entry[ 9] = int(l[6][5:])
+      entry[10] = int(l[7][5:])
+
+
+      if len(table) == 0:
+      #Check if TP, FP, etc.
+        tpdiff = entry[ 7]
+        fpdiff = entry[ 8]
+        tndiff = entry[ 9]
+        fndiff = entry[10]
+      else:
+        tpdiff = table[-1][ 7] - entry[ 7]
+        fpdiff = table[-1][ 8] - entry[ 8]
+        tndiff = table[-1][ 9] - entry[ 9]
+        fndiff = table[-1][10] - entry[10]
+      while tpdiff > 0 or fpdiff > 0 or tndiff > 0 or fndiff > 0:
+        tmp = entry.copy()
+        if tpdiff > 0:
+          if tpdiff > 1:
+            tmp [3]  = 1
+            tmp [7] += tpdiff
+          else:
+            entry [3]  = 1
+            entry [7] += 1
+          tpdiff -= 1
+        elif fpdiff > 0:
+          if fpdiff > 1:
+            tmp [4]  = 1
+            tmp [8] += fpdiff
+          else:
+            entry [4]  = 1
+            entry [8] += 1
+          fpdiff -= 1
+        elif tndiff > 0:
+          if tndiff > 1:
+            tmp [5]  = 1
+            tmp [9] += tndiff
+          else:
+            entry [5]  = 1
+            entry [9] += 1
+          tndiff -= 1
+        elif fndiff > 0:
+          if fndiff > 1:
+            tmp [ 6]  = 1
+            tmp [10] += fndiff
+          else:
+            entry [ 6]  = 1
+            entry [10] += 1
+          fndiff -= 1
+        table += [tmp]
+
+      #table += [entry]
+
+    #print(table)
+    for i in table:
+      print(i)
+    #print('Dictionary Failures:' + str(len(dictionary)))
+    #print(dictionary)
+
+  return None
+'''
+  if dictionary:
+        name = ''
+        for i in range(len(dictionary)):
+          if dictionary[i][0] == conf:
+            name = [dictionary[i][1]]
+            del dictionary[i]
+            break
+        entry += name
+      else:
+        entry += ['none']'''
 
 def get_results( img_names, args ):
   print(args.res_file)
@@ -279,6 +371,8 @@ def get_results( img_names, args ):
     out_path = args.output / i / 'output_score_tracks.txt'
     com_path = args.output / i / ('computed_' + i + '.csv')
     print_human_results( out_path, roc_path, hum_path )
+    d = make_confidence_name_table( com_path )
+    make_result_csv( out_path, roc_path, csv_path, d )
 
 
   return None
