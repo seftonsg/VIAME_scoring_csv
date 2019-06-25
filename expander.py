@@ -440,20 +440,20 @@ if __name__ == "__main__":
   img_names = get_imgs( args.images )
 
   #create directory tree
-  ###make_dir_tree( img_names, args.output )
+  make_dir_tree( img_names, args.output )
 
   #copy over vital files
-  ###copy_vitals( args )
+  copy_vitals( args )
 
   #create a new truth file for each image
-  ###os.chdir(args.output)
-  ###create_subtrack_files( img_names, args )
-  ###move_subtrack_files(   img_names, args )
+  os.chdir(args.output)
+  create_subtrack_files( img_names, args )
+  move_subtrack_files(   img_names, args )
 
   #make the scripts
-  ###make_scripts( img_names, args )
-  ###run_scripts(  img_names, args )
-  ###os.chdir( '..' )
+  make_scripts( img_names, args )
+  run_scripts(  img_names, args )
+  os.chdir( '..' )
 
   get_results( img_names, args )
 

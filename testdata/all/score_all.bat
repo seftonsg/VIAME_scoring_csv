@@ -8,8 +8,8 @@ CALL "%VIAME_INSTALL%\setup_viame.bat"
 
 REM Run score tracks on data for singular metrics
 
-SET TRUTHS=truth_18ZC5064.csv
-SET TRACKS=computed_18ZC5064.csv
+SET TRUTHS=truth_all.csv
+SET TRACKS=computed_all.csv
 
 python %VIAME_INSTALL%\configs\score_results.py ^
  -computed %TRACKS% ^
