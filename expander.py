@@ -22,7 +22,6 @@ def make_pure_path( loc ):
     ret = pathlib.PurePath(loc)
   return ret
 
-
 def get_imgs( directory ):
   img_names = []
 
@@ -327,17 +326,49 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
           e[1] = best[1]
           e[2] = best[0]
           del dictionary[idx]
-    
-
-    for i in table:
-      print(i)
-    print(' Table Len: ' + str(len(table)))
-    print(' Unused Dict (' + str(len(dictionary)) + '): ')
-    for i in dictionary:
-      print(i)
-    print("\n\n\n")
-
+    '''for i in table:
+                  print(i)
+                print(' Table Len: ' + str(len(table)))
+                print(' Unused Dict (' + str(len(dictionary)) + '): ')
+                for i in dictionary:
+                  print(i)
+                print("\n\n\n")'''
   return table
+
+def combine_result_csv( data, calculate_negatives=False ):
+  tupledata = []
+  for i in data:
+    tupledata += [( i[2], i )]
+  tupledata.sort()
+  tupledata = tupledata[::-1]
+  
+  newdat = []
+  for i in tupledata:
+    newdat += [i[1]]
+
+  if calculate_negatives:
+    print('Calculating TN/FN is not yet implemented')
+
+  TP = 0
+  FP = 0
+  TN = 0
+  FN = 0
+  for i in newdat:
+    if i[3]:
+      TP += 1
+    elif i[4]:
+      FP += 1  
+    i[ 5] = TP  #ACC TP
+    i[ 6] = FP  #ACC FP
+    i[ 7] = 0   #TN
+    i[ 8] = 0   #FN
+    i[ 9] = TP / (TP+FP)#Precision
+    i[10] = TP / (TP+FN)#Recall
+
+
+  for i in newdat:
+    print(i)
+  return newdat
 
 def get_results( img_names, args ):
   print(args.res_file)
@@ -351,13 +382,14 @@ def get_results( img_names, args ):
   print_human_results( out_path, roc_path, hum_path, True )
       #1: get human-readable data and print to args.res_file=
 
+  data = []
   for i in img_names:
     roc_path = args.output / i / 'output_roc.txt'
     out_path = args.output / i / 'output_score_tracks.txt'
     com_path = args.output / i / ('computed_' + i + '.csv')
     print_human_results( out_path, roc_path, hum_path )
     d = make_confidence_name_table( com_path )
-    make_result_csv( out_path, roc_path, csv_path, d )
+    data += make_result_csv( out_path, roc_path, csv_path, d )
   roc_path = args.output / 'all' / 'output_roc.txt'
   out_path = args.output / 'all' / 'output_score_tracks.txt'
   com_path = args.output / 'all' / ('computed_all.csv')
@@ -365,6 +397,7 @@ def get_results( img_names, args ):
   d = make_confidence_name_table( com_path )
   make_result_csv( out_path, roc_path, csv_path, d )
 
+  data = combine_result_csv( data )
 
   return None
 
