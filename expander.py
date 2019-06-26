@@ -277,7 +277,7 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
 
       #TODO: convert to enumerated?  dictionary-like?
       entry = [None] * 11
-      entry[ 0] = [score.parts[-2]]
+      entry[ 0] = score.parts[-2]
       #entry += [conf]
       entry[ 2] = conf
       entry[ 3] = 0
@@ -326,16 +326,36 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
           e[1] = best[1]
           e[2] = best[0]
           del dictionary[idx]
-    '''for i in table:
-                  print(i)
-                print(' Table Len: ' + str(len(table)))
-                print(' Unused Dict (' + str(len(dictionary)) + '): ')
-                for i in dictionary:
-                  print(i)
-                print("\n\n\n")'''
+  #  for i in table:
+  #    print(i)
+  #  print(' Table Len: ' + str(len(table)))
+  #  print(' Unused Dict (' + str(len(dictionary)) + '): ')
+  #  for i in dictionary:
+  #    print(i)
+  #  print("\n\n\n")
   return table
 
-def combine_result_csv( data, calculate_negatives=False ):
+def update_tfpn( data, negatives ): #update true and false pos and neg, idk what else to call this function.
+  TP = 0
+  FP = 0
+  TN = negatives[0]
+  FN = negatives[1]
+  for i in data:
+    if i[3]:
+      TP += 1
+      FN -= 1
+    elif i[4]:
+      FP += 1  
+      TN -= 1
+    i[ 5] = TP  #ACC TP
+    i[ 6] = FP  #ACC FP
+    i[ 7] = TN   #TN
+    i[ 8] = FN   #FN
+    i[ 9] = TP / (TP+FP)#Precision
+    i[10] = TP / (TP+FN)#Recall
+  return data
+
+def combine_result_csv( data, negatives ):
   tupledata = []
   for i in data:
     tupledata += [( i[2], i )]
@@ -346,28 +366,8 @@ def combine_result_csv( data, calculate_negatives=False ):
   for i in tupledata:
     newdat += [i[1]]
 
-  if calculate_negatives:
-    print('Calculating TN/FN is not yet implemented')
-
-  TP = 0
-  FP = 0
-  TN = 0
-  FN = 0
-  for i in newdat:
-    if i[3]:
-      TP += 1
-    elif i[4]:
-      FP += 1  
-    i[ 5] = TP  #ACC TP
-    i[ 6] = FP  #ACC FP
-    i[ 7] = 0   #TN
-    i[ 8] = 0   #FN
-    i[ 9] = TP / (TP+FP)#Precision
-    i[10] = TP / (TP+FN)#Recall
-
-
-  for i in newdat:
-    print(i)
+  newdat = update_tfpn( newdat, negatives )
+  
   return newdat
 
 def get_results( img_names, args ):
@@ -388,16 +388,32 @@ def get_results( img_names, args ):
     out_path = args.output / i / 'output_score_tracks.txt'
     com_path = args.output / i / ('computed_' + i + '.csv')
     print_human_results( out_path, roc_path, hum_path )
-    d = make_confidence_name_table( com_path )
-    data += make_result_csv( out_path, roc_path, csv_path, d )
+    dictionary = make_confidence_name_table( com_path )
+    data += make_result_csv( out_path, roc_path, csv_path, dictionary )
+
   roc_path = args.output / 'all' / 'output_roc.txt'
   out_path = args.output / 'all' / 'output_score_tracks.txt'
   com_path = args.output / 'all' / ('computed_all.csv')
   print_human_results( out_path, roc_path, hum_path )
-  d = make_confidence_name_table( com_path )
-  make_result_csv( out_path, roc_path, csv_path, d )
+  dictionary = make_confidence_name_table( com_path )
+  tmp = make_result_csv( out_path, roc_path, csv_path, dictionary )
 
-  data = combine_result_csv( data )
+  total_TN = tmp[0][7]
+  total_FN = tmp[0][8]
+  if tmp[3]:
+    total_FN += 1
+  elif tmp[4]:
+    total_TN += 1
+  for i in tmp:
+    print(i)
+  print('\n\n\n')
+
+  data = combine_result_csv( data, (total_TN, total_FN) )
+  header = ['Image Name','Annotation Name','Confidence Score','True','False','# True Positives','# False Positives','# True Negatives','# False Negatives','Precision','Recall']
+  types = ['str','str','float','bool','bool','int','int','int','int','float','float']
+  data = header + types + data
+  for i in data:
+    print(i)
 
   return None
 
