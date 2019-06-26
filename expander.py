@@ -9,18 +9,10 @@ import subprocess
 import shlex      #shell tokenizer
 import time       #for sleep
 import pathlib
+#Custom imports
+import utils
+import exec_score
 
-def make_pure_path( loc ):
-  ret = None
-
-  if not loc:
-    return None
-
-  if not pathlib.PurePath( loc ).is_absolute():
-    ret = pathlib.PurePath( os.getcwd(), loc )
-  else:
-    ret = pathlib.PurePath(loc)
-  return ret
 
 def get_imgs( directory ):
   img_names = []
@@ -43,12 +35,6 @@ def get_imgs( directory ):
 
   return img_names
 
-def ltos( l ):
-  w=""
-  for i in l:
-    w += str(i) + ','
-  return w[:-1]
-
 def create_subtrack_files( img_names, args ):
   for i in img_names:
     with open( args.truth ) as t:
@@ -62,7 +48,7 @@ def create_subtrack_files( img_names, args ):
           if name == i:
             l[0] = count
             l[2] = 0
-            o.write( ltos(l) + "\n" )#'x'.join(y) adds list y to the end of string x
+            o.write( utils.ltos_csv(l) + "\n" )#'x'.join(y) adds list y to the end of string x
             count += 1
 
     with open( args.computed ) as c:
@@ -76,7 +62,7 @@ def create_subtrack_files( img_names, args ):
           if name == i:
             l[0] = count
             l[2] = 0
-            o.write( ltos(l) + "\n" )#'x'.join(y) adds list y to the end of string x
+            o.write( utils.ltos_csv(l) + "\n" )#'x'.join(y) adds list y to the end of string x
             count += 1
 
   return None
@@ -121,75 +107,6 @@ def copy_vitals( args ):
   shutil.copyfile( args.computed, args.output /      args.computed.name)
   shutil.copyfile(    args.truth, args.output / 'all' /    'truth_all.csv')
   shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
-  return None
-
-def make_scripts( img_names, args ):
-  #TODO: not compatable with Matt's scripts.  custom script only
-  script_extension = args.script.name.split('.')[-1]
-  rex_t = re.compile('SET TRUTHS=.*')
-  rex_c = re.compile('SET TRACKS=.*')
-  for i in img_names:
-    with open(args.script) as s:
-      os.chdir(i)
-      with open('score_' + i + '.' + script_extension, 'w' ) as o:
-        for l in s:
-          if rex_t.match(l):
-            l='SET TRUTHS=truth_' + i + '.csv\n'
-          if rex_c.match(l):
-            l='SET TRACKS=computed_' + i + '.csv\n'
-          o.write(l)
-      os.chdir( '..' )
-  with open(args.script) as s: 
-    os.chdir( 'all' )
-    with open('score_all.' + script_extension, 'w') as o:
-      for l in s:
-          if rex_t.match(l):
-            l='SET TRUTHS=truth_all.csv\n'
-          if rex_c.match(l):
-            l='SET TRACKS=computed_all.csv\n'
-          o.write(l)
-      os.chdir( '..' )
-  return None
-
-def script_handler( args ):
-  process_name = str(args)
-  print( 'About to run: ' + process_name + ' in ' + os.getcwd())
-  handle = subprocess.Popen( args,
-                             bufsize            = 1,
-                             stdin              = subprocess.PIPE,
-                             stdout             = subprocess.DEVNULL, 
-                             #stdout             = subprocess.PIPE,
-                             stderr             = subprocess.STDOUT,
-                             universal_newlines = True
-                             #text   = True #python 3.7+, uni-NewLine has same effect
-                             #encoding = not sure how to use this arg 
-                                  )
-        
-  handle.stdin.write('\n')
-  handle.wait()
-  print("Done: " + os.getcwd())
-  print(handle.returncode)
-
-  return handle.returncode
-
-def run_scripts( img_names, args ):
-  script_extension = args.script.suffix
-  print('TODO: Purepath on scripts')
-  for i in img_names:
-    os.chdir(i)
-    #TODO: does not send purepaths. 
-    process_name = 'score_' + i +  script_extension
-    args = process_name #shlex.split(process_name + "")
-    script_handler( args )
-    os.chdir( '..' )
-
-  os.chdir( 'all' )
-  #TODO: does not send purepaths. 
-  process_name = 'score_all' + script_extension
-  args = process_name #shlex.split(process_name + "")
-  script_handler( args )
-  os.chdir( '..' )
-
   return None
 
 def print_human_results( score, roc, destination, wipe=False ):
@@ -485,13 +402,13 @@ if __name__ == "__main__":
 
   cwd = os.getcwd()
 
-  args.truth    = make_pure_path(    args.truth )
-  args.computed = make_pure_path( args.computed )
-  args.images   = make_pure_path(   args.images ) 
-  args.output   = make_pure_path(   args.output )
-  args.script   = make_pure_path(   args.script )
-  #args.res_file = make_pure_path( args.res_file )
-  #args.res_csv  = make_pure_path(  args.res_csv )
+  args.truth    = utils.make_pure_path(    args.truth )
+  args.computed = utils.make_pure_path( args.computed )
+  args.images   = utils.make_pure_path(   args.images ) 
+  args.output   = utils.make_pure_path(   args.output )
+  args.script   = utils.make_pure_path(   args.script )
+  #args.res_file = utils.make_pure_path( args.res_file )
+  #args.res_csv  = utils.make_pure_path(  args.res_csv )
 
   #get the names of the images
   img_names = get_imgs( args.images )
@@ -508,8 +425,8 @@ if __name__ == "__main__":
   ###move_subtrack_files(   img_names, args )
 
   #make the scripts
-  ###make_scripts( img_names, args )
-  ###run_scripts(  img_names, args )
+  ###exec_score.make_scripts( img_names, args )
+  ###exec_score.run_scripts(  img_names, args )
   ###os.chdir( '..' )
 
   get_results( img_names, args )
