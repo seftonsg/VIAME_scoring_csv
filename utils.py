@@ -11,16 +11,19 @@ import os
 
 
 def ltos_csv( l ):
-  """ Convert a list to a csv-style string
+  """ Util Function
+      ltos_csv( l:list ) :string
+      Convert a list to a csv-style string
   """
   w=''
   for i in l:
     w += str(i) + ','
   return w[:-1]
 
-
 def make_PurePath( loc ):
-  """ Convert a string to PurePath
+  """ Util Function
+      make_PurePath( loc:string ) :pathlib.PurePath
+      Convert a string to PurePath
       filename -> PP( cwd/filename )
       path     -> PP( path )
   """

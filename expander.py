@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 #expander.py
 
 import os

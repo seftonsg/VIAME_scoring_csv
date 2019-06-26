@@ -14,7 +14,7 @@ import utils
 
 def _make_scripts( img_names, args ):
   """ Internal Function
-      _make_scripts( img_names:list, args:?ty )
+      _make_scripts( img_names:list, args:?ty ) :None
       Give a list of images and the full set of 
       terminal args.  Makes VIAME scoring_roc-like
       scripts for later use.
@@ -49,7 +49,7 @@ def _make_scripts( img_names, args ):
 
 def _script_handler( exec_, argv=None ):
   """ Internal Function
-      _script_handler( exec_:pathlib.PurePath, argv:list )
+      _script_handler( exec_:pathlib.PurePath, argv:list ) :handle.returncode?
       Give a script name and arguments, this will run it.
       Written specifically for VIAME scoring_roc scripts.
   """
@@ -90,7 +90,7 @@ def _script_handler( exec_, argv=None ):
 
 def run_scripts( img_names, args ):
   """ _ Function
-      run_scripts( img_names:list, args:?ty )
+      run_scripts( img_names:list, args:?ty ) :None
       Give a list of images and terminal args,
       this will make and run all the scoring
       scripts.
