@@ -1,16 +1,19 @@
 ################################
 #  Sage Sefton
-#  Utility Functions for scoring
+#  Functions for Executing VIAME
+#  scoring functions
 #  2019 06 26
 ################################
 
 import re
 import subprocess
 import os
+#Custom
+import utils
 
-
-
-def make_scripts( img_names, args ):
+def _make_scripts( img_names, args ):
+  """ Internal Function
+  """
   #TODO: not compatable with Matt's scripts.  custom script only
   script_extension = args.script.name.split('.')[-1]
   rex_t = re.compile('SET TRUTHS=.*')
@@ -18,24 +21,23 @@ def make_scripts( img_names, args ):
   for i in img_names:
     with open(args.script) as s:
       os.chdir(i)
-      with open('score_' + i + '.' + script_extension, 'w' ) as o:
+      oname = args.output / pathlib.PurePath('score_' + i + script_extension)
+      with open(oname, 'w' ) as o:
         for l in s:
           if rex_t.match(l):
             l='SET TRUTHS=truth_' + i + '.csv\n'
           if rex_c.match(l):
             l='SET TRACKS=computed_' + i + '.csv\n'
           o.write(l)
-      os.chdir( '..' )
   with open(args.script) as s: 
-    os.chdir( 'all' )
-    with open('score_all.' + script_extension, 'w') as o:
+    oname = args.output / pathlib.PurePath('score_all' + script_extension)
+    with open(oname, 'w') as o:
       for l in s:
           if rex_t.match(l):
             l='SET TRUTHS=truth_all.csv\n'
           if rex_c.match(l):
             l='SET TRACKS=computed_all.csv\n'
           o.write(l)
-      os.chdir( '..' )
   return None
 
 def _script_handler( args ):
@@ -64,22 +66,23 @@ def _script_handler( args ):
 
 def run_scripts( img_names, args ):
   """
+
   """
+  _make_scripts( img_names, args )
   script_extension = args.script.suffix
   print('TODO: Purepath on scripts')
   for i in img_names:
-    os.chdir(i)
     #TODO: does not send purepaths. 
-    process_name = 'score_' + i +  script_extension
-    args = process_name #shlex.split(process_name + "")
+    pname = pathlib.PurePath(i + '/score_' + i + script_extension)
+    process = args.output / pname
+    args = [process,] #similar to argc/argv
     _script_handler( args )
-    os.chdir( '..' )
 
-  os.chdir( 'all' )
   #TODO: does not send purepaths. 
-  process_name = 'score_all' + script_extension
-  args = process_name #shlex.split(process_name + "")
+  pname = pathlib.PurePath('all/score_all' + script_extension)
+  process = args.output / pname
+  args = [process,] #similar to argc/argv
   _script_handler( args )
-  os.chdir( '..' )
 
   return None
+

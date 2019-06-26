@@ -402,13 +402,13 @@ if __name__ == "__main__":
 
   cwd = os.getcwd()
 
-  args.truth    = utils.make_pure_path(    args.truth )
-  args.computed = utils.make_pure_path( args.computed )
-  args.images   = utils.make_pure_path(   args.images ) 
-  args.output   = utils.make_pure_path(   args.output )
-  args.script   = utils.make_pure_path(   args.script )
-  #args.res_file = utils.make_pure_path( args.res_file )
-  #args.res_csv  = utils.make_pure_path(  args.res_csv )
+  args.truth    = utils.make_PurePath(    args.truth )
+  args.computed = utils.make_PurePath( args.computed )
+  args.images   = utils.make_PurePath(   args.images ) 
+  args.output   = utils.make_PurePath(   args.output )
+  args.script   = utils.make_PurePath(   args.script )
+  #args.res_file = utils.make_PurePath( args.res_file )
+  #args.res_csv  = utils.make_PurePath(  args.res_csv )
 
   #get the names of the images
   img_names = get_imgs( args.images )
@@ -425,7 +425,6 @@ if __name__ == "__main__":
   ###move_subtrack_files(   img_names, args )
 
   #make the scripts
-  ###exec_score.make_scripts( img_names, args )
   ###exec_score.run_scripts(  img_names, args )
   ###os.chdir( '..' )
 

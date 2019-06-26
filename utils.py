@@ -19,7 +19,7 @@ def ltos_csv( l ):
   return w[:-1]
 
 
-def make_pure_path( loc ):
+def make_PurePath( loc ):
   """ Convert a string to PurePath
       filename -> PP( cwd/filename )
       path     -> PP( path )
