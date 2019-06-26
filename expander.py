@@ -42,7 +42,7 @@ def create_subtrack_files( img_names, args ):
   for i in img_names:
     with open( args.truth ) as t:
       #create sub-truth files
-      with open( 'truth_' + i + ".csv", 'w' ) as o:
+      with open( 'truth_' + i + '.csv', 'w' ) as o:
         count = 0
         for l in t:
           #find lines associated with the image
@@ -51,12 +51,12 @@ def create_subtrack_files( img_names, args ):
           if name == i:
             l[0] = count
             l[2] = 0
-            o.write( utils.ltos_csv(l) + "\n" )#'x'.join(y) adds list y to the end of string x
+            o.write( utils.ltos_csv(l) + '\n' )#'x'.join(y) adds list y to the end of string x
             count += 1
 
     with open( args.computed ) as c:
     #create sub-computed files
-      with open( 'computed_' + i + ".csv", 'w' ) as o:
+      with open( 'computed_' + i + '.csv', 'w' ) as o:
         count = 0
         for l in c:
           #find lines associated with the image
@@ -65,7 +65,7 @@ def create_subtrack_files( img_names, args ):
           if name == i:
             l[0] = count
             l[2] = 0
-            o.write( utils.ltos_csv(l) + "\n" )#'x'.join(y) adds list y to the end of string x
+            o.write( utils.ltos_csv(l) + '\n' )#'x'.join(y) adds list y to the end of string x
             count += 1
 
   return None
@@ -75,12 +75,12 @@ def move_subtrack_files( img_names, args ):
   cwd = os.getcwd()
   for i in img_names:
     #truth
-    tname = "truth_"+i+".csv"
+    tname = 'truth_'+i+'.csv'
     src = cwd + '/' + tname
     dst = cwd + '/' + i + '/' + tname
     os.rename( src, dst )
     #computed
-    cname = "computed_"+i+".csv"
+    cname = 'computed_'+i+'.csv'
     src = cwd + '/' + cname
     dst = cwd + '/' + i + '/' + cname
     os.rename( src, dst )
