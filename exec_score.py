@@ -1,27 +1,32 @@
 ################################
 #  Sage Sefton
 #  Functions for Executing VIAME
-#  scoring functions
+#  scoring scripts
 #  2019 06 26
 ################################
 
 import re
 import subprocess
 import os
+import pathlib
 #Custom
 import utils
 
 def _make_scripts( img_names, args ):
   """ Internal Function
+      _make_scripts( img_names:list, args:?ty )
+      Give a list of images and the full set of 
+      terminal args.  Makes VIAME scoring_roc-like
+      scripts for later use.
   """
-  #TODO: not compatable with Matt's scripts.  custom script only
-  script_extension = args.script.name.split('.')[-1]
+  #TODO: not compatable with Matt's scripts, custom script only
   rex_t = re.compile('SET TRUTHS=.*')
   rex_c = re.compile('SET TRACKS=.*')
+
+  # Make for images
   for i in img_names:
     with open(args.script) as s:
-      os.chdir(i)
-      oname = args.output / pathlib.PurePath('score_' + i + script_extension)
+      oname = args.output / i / pathlib.PurePath('score_' + i + args.script.suffix)
       with open(oname, 'w' ) as o:
         for l in s:
           if rex_t.match(l):
@@ -29,8 +34,10 @@ def _make_scripts( img_names, args ):
           if rex_c.match(l):
             l='SET TRACKS=computed_' + i + '.csv\n'
           o.write(l)
+
+  # Make for all
   with open(args.script) as s: 
-    oname = args.output / pathlib.PurePath('score_all' + script_extension)
+    oname = args.output / 'all' / pathlib.PurePath('score_all' + args.script.suffix)
     with open(oname, 'w') as o:
       for l in s:
           if rex_t.match(l):
@@ -40,12 +47,23 @@ def _make_scripts( img_names, args ):
           o.write(l)
   return None
 
-def _script_handler( args ):
+def _script_handler( exec_, argv=None ):
   """ Internal Function
-
+      _script_handler( exec_:pathlib.PurePath, argv:list )
+      Give a script name and arguments, this will run it.
+      Written specifically for VIAME scoring_roc scripts.
   """
-  process_name = str(args)
-  print( 'About to run: ' + process_name + ' in ' + os.getcwd())
+  # Move to relevant directory
+  basedir = os.getcwd()
+  os.chdir(exec_.parent)
+
+  # Prepare arguments
+  args = [exec_.name]
+  if argv:
+    args += argv
+
+  # Run the script with Popen
+  print( 'Running: ' + str(exec_) )
   handle = subprocess.Popen( args,
                              bufsize            = 1,
                              stdin              = subprocess.PIPE,
@@ -56,33 +74,41 @@ def _script_handler( args ):
                              #text   = True #python 3.7+, uni-NewLine has same effect
                              #encoding = not sure how to use this arg 
                                   )
-        
+  
+  # Wait to finish
   handle.stdin.write('\n')
   handle.wait()
-  print("Done: " + os.getcwd())
-  print(handle.returncode)
+  if not handle.returncode:
+    print('Process: ' + exec_.name + ' completed successfully.')
+  else:
+    print('Process: ' + exec_.name + ' failed.')
+
+  # Cleanup
+  os.chdir(basedir)
 
   return handle.returncode
 
 def run_scripts( img_names, args ):
+  """ _ Function
+      run_scripts( img_names:list, args:?ty )
+      Give a list of images and terminal args,
+      this will make and run all the scoring
+      scripts.
+      TODO: Rename to 'score()' ?
   """
-
-  """
+  
   _make_scripts( img_names, args )
+  
   script_extension = args.script.suffix
-  print('TODO: Purepath on scripts')
+
   for i in img_names:
-    #TODO: does not send purepaths. 
     pname = pathlib.PurePath(i + '/score_' + i + script_extension)
     process = args.output / pname
-    args = [process,] #similar to argc/argv
-    _script_handler( args )
+    _script_handler( process )
 
-  #TODO: does not send purepaths. 
   pname = pathlib.PurePath('all/score_all' + script_extension)
   process = args.output / pname
-  args = [process,] #similar to argc/argv
-  _script_handler( args )
+  _script_handler( process )
 
   return None
 
