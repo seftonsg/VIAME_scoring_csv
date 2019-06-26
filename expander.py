@@ -11,6 +11,7 @@ import subprocess
 import shlex      #shell tokenizer
 import time       #for sleep
 import pathlib
+import matplotlib.pyplot as plt
 #Custom imports
 import utils
 import exec_score
@@ -289,9 +290,9 @@ def combine_result_csv( data, negatives ):
 
   return newdat
 
-def print_csv( data, destination ):
-  print('Writing to: ' + str(destination))
-  with open(destination, 'w') as d:
+def print_csv( data, dest ):
+  print('Writing to: ' + str(dest))
+  with open(dest, 'w') as d:
     for i in data:
       writ = ''
       for j in i:
@@ -299,6 +300,29 @@ def print_csv( data, destination ):
         writ += ','
       writ = writ[:-1] + '\n'
       d.write(writ)
+  return None
+
+def plot_pvr( data, dest=None ):
+  """ 
+      plot_pvr( data: , dest:pathlib.PurePath )
+  """
+  xs = []
+  ys = []
+  n = []
+
+  for i in data:
+    xs += [i[ 9]]
+    ys += [i[10]]
+    n += [(i[9],i[10])]
+  plt.plot(xs,ys)
+  #plt.plot(n,'rx')
+  plt.xlabel('Precision')
+  plt.ylabel('Recall')
+  plt.axis([1.0,0.9,0.0,1.0])
+  if dest:
+    plt.savefig(dest)
+  else:
+    plt.show()
   return None
 
 def get_results( img_names, args ):
@@ -340,12 +364,13 @@ def get_results( img_names, args ):
   data = combine_result_csv( data, (total_TN, total_FN) )
   header = ['Image Name','Annotation Name','Confidence Score','True','False','# True Positives','# False Positives','# True Negatives','# False Negatives','Precision','Recall']
   types = ['str','str','float','bool','bool','int','int','int','int','float','float']
-  data = [header] + [types] + data
+  pretty_data = [header] + [types] + data
   #for i in data:
   #  print(i)
 
-  outfile = pathlib.PurePath(os.getcwd()+'/precr.csv')
-  print_csv( data, outfile )
+  #TODO: rename the file for csv
+  print_csv( pretty_data, args.results / 'precr.csv' )
+  plot_pvr( data, args.results / 'PvR_graph.svg' )
 
   return None
 
@@ -367,6 +392,8 @@ if __name__ == "__main__":
   # Outputs
   parser.add_argument( '-output', default='exp',
              help='Output directory for expanded folders.')
+  parser.add_argument( '-results', default='results',
+             help='Results folder name, stored within output dir.')
   parser.add_argument( '-res_file', default='results.txt',
              help='Specify a human-readable results txt file.')
   parser.add_argument( '-res_csv', default='stats.csv',
@@ -409,6 +436,7 @@ if __name__ == "__main__":
   args.images   = utils.make_PurePath(   args.images ) 
   args.output   = utils.make_PurePath(   args.output )
   args.script   = utils.make_PurePath(   args.script )
+  args.results  = args.output / args.results
   #args.res_file = utils.make_PurePath( args.res_file )
   #args.res_csv  = utils.make_PurePath(  args.res_csv )
 

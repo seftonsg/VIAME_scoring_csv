@@ -3,7 +3,6 @@
 #Project-Specific
 *.JPG
 1c*
-results.txt
 
 #OS-Specific (filesys management)
 .DS_Store
@@ -11,6 +10,7 @@ results.txt
 #Testing
 t
 exp/*
+*/results/*
 
 #Python Misc
 __pycache__
