@@ -367,8 +367,20 @@ def combine_result_csv( data, negatives ):
     newdat += [i[1]]
 
   newdat = update_tfpn( newdat, negatives )
-  
+
   return newdat
+
+def print_csv( data, destination ):
+  print('Writing to: ' + str(destination))
+  with open(destination, 'w') as d:
+    for i in data:
+      writ = ''
+      for j in i:
+        writ += str(j)
+        writ += ','
+      writ = writ[:-1] + '\n'
+      d.write(writ)
+  return None
 
 def get_results( img_names, args ):
   print(args.res_file)
@@ -400,20 +412,21 @@ def get_results( img_names, args ):
 
   total_TN = tmp[0][7]
   total_FN = tmp[0][8]
+  #Alter negatives based on the first entry:
   if tmp[3]:
     total_FN += 1
   elif tmp[4]:
     total_TN += 1
-  for i in tmp:
-    print(i)
-  print('\n\n\n')
 
   data = combine_result_csv( data, (total_TN, total_FN) )
   header = ['Image Name','Annotation Name','Confidence Score','True','False','# True Positives','# False Positives','# True Negatives','# False Negatives','Precision','Recall']
   types = ['str','str','float','bool','bool','int','int','int','int','float','float']
-  data = header + types + data
-  for i in data:
-    print(i)
+  data = [header] + [types] + data
+  #for i in data:
+  #  print(i)
+
+  outfile = pathlib.PurePath(os.getcwd()+'/precr.csv')
+  print_csv( data, outfile )
 
   return None
 
