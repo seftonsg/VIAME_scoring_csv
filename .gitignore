@@ -2,7 +2,6 @@
 
 #Project-Specific
 *.JPG
-1c*
 
 #OS-Specific (filesys management)
 .DS_Store
@@ -11,6 +10,7 @@
 t
 exp/*
 */results/*
+new*
 
 #Python Misc
 __pycache__
