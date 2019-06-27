@@ -57,7 +57,8 @@ def create_subtrack_files( img_names, out_dir, truth_file, comp_file ):
   for i in img_names:
     with open( truth_file ) as t:
       #create sub-truth files
-      with open( 'truth_' + i + '.csv', 'w' ) as o:
+      tfile_o = out_dir / ( 'truth_' + i + '.csv')
+      with open( tfile_o, 'w' ) as o:
         count = 0
         for l in t:
           #find lines associated with the image
@@ -71,7 +72,8 @@ def create_subtrack_files( img_names, out_dir, truth_file, comp_file ):
 
     with open( comp_file ) as c:
     #create sub-computed files
-      with open( 'computed_' + i + '.csv', 'w' ) as o:
+      cfile_o = out_dir / ( 'computed_' + i + '.csv')
+      with open( cfile_o, 'w' ) as o:
         count = 0
         for l in c:
           #find lines associated with the image
@@ -86,7 +88,7 @@ def create_subtrack_files( img_names, out_dir, truth_file, comp_file ):
   return None
 
 #init
-def move_subtrack_files( img_names, dst ):
+def move_subtrack_files( img_names, out_dir ):
   """ Function
       move_subtrack_files( img_names:list, dst:pathlib.PurePath ) :None
       Given the images and output directory, moves all subtrack
@@ -96,13 +98,13 @@ def move_subtrack_files( img_names, dst ):
   for i in img_names:
     #truth
     tname = 'truth_'+i+'.csv'
-    src = dst / tname
-    dst = dst / i / tname
+    src = out_dir / tname
+    dst = out_dir / i / tname
     os.rename( src, dst )
     #computed
     cname = 'computed_'+i+'.csv'
-    src = dst / cname
-    dst = dst / i / cname
+    src = out_dir / cname
+    dst = out_dir / i / cname
     os.rename( src, dst )
 
   return None
@@ -215,19 +217,19 @@ if __name__ == "__main__":
   img_names = get_imgs( args.images )
 
   #create directory tree
-  ###make_dir_tree( img_names, args.output )
+  #make_dir_tree( img_names, args.output )
 
   #copy over vital files
-  ###copy_vitals( args )
+  #copy_vitals( args )
 
   #create a new truth file for each image
-  ###os.chdir(args.output)
-  ###create_subtrack_files( img_names, args.output, args.truth, args.computed )
-  ###move_subtrack_files(   img_names, args )
+  #os.chdir(args.output)
+  #create_subtrack_files( img_names, args.output, args.truth, args.computed )
+  #move_subtrack_files(   img_names, args.output )
 
   #make the scripts
-  ###exec_score.run_scripts(  img_names, args )
-  ###os.chdir( '..' )
+  #exec_score.run_scripts(  img_names, args )
+  #os.chdir( '..' )
 
   output_gen.get_results( img_names, args )
 
