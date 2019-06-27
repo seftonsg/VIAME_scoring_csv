@@ -8,7 +8,6 @@ import sys
 import shutil
 import argparse
 import subprocess
-import shlex      #shell tokenizer
 import time       #for sleep
 import pathlib
 import matplotlib.pyplot as plt
@@ -17,7 +16,13 @@ import utils
 import exec_score
 
 
+#init
 def get_imgs( directory ):
+  """ Function
+      get_imgs( directory:pathlib.PurePath) :list
+      Given a directory or list file (txt), returns
+      a list of the found images.
+  """
   img_names = []
 
   if not directory.suffix:
@@ -38,9 +43,20 @@ def get_imgs( directory ):
 
   return img_names
 
-def create_subtrack_files( img_names, args ):
+#init
+def create_subtrack_files( img_names, out_dir, truth_file, comp_file ):
+  """ Function
+      create_subtrack_files( img_names:list, 
+        out_dir   :pathlib.PurePath 
+        truth_file:pathlib.PurePath,
+        comp_file :pathlib.PurePath
+        ) :None
+      Given the locations of truth and computed files,
+      separates all by images and puts in the respective
+      output folders.
+  """
   for i in img_names:
-    with open( args.truth ) as t:
+    with open( truth_file ) as t:
       #create sub-truth files
       with open( 'truth_' + i + '.csv', 'w' ) as o:
         count = 0
@@ -54,7 +70,7 @@ def create_subtrack_files( img_names, args ):
             o.write( utils.ltos_csv(l) + '\n' )#'x'.join(y) adds list y to the end of string x
             count += 1
 
-    with open( args.computed ) as c:
+    with open( comp_file ) as c:
     #create sub-computed files
       with open( 'computed_' + i + '.csv', 'w' ) as o:
         count = 0
@@ -70,24 +86,35 @@ def create_subtrack_files( img_names, args ):
 
   return None
 
-def move_subtrack_files( img_names, args ):
-  
-  cwd = os.getcwd()
+#init
+def move_subtrack_files( img_names, dst ):
+  """ Function
+      move_subtrack_files( img_names:list, dst:pathlib.PurePath ) :None
+      Given the images and output directory, moves all subtrack
+      (.csv) files to their respective folders.
+  """
+  #cwd = os.getcwd()
   for i in img_names:
     #truth
     tname = 'truth_'+i+'.csv'
-    src = cwd + '/' + tname
-    dst = cwd + '/' + i + '/' + tname
+    src = dst / tname
+    dst = dst / i / tname
     os.rename( src, dst )
     #computed
     cname = 'computed_'+i+'.csv'
-    src = cwd + '/' + cname
-    dst = cwd + '/' + i + '/' + cname
+    src = dst / cname
+    dst = dst / i / cname
     os.rename( src, dst )
 
   return None
 
+#init
 def make_dir_tree( img_names, newdir ):
+  """ Function
+      make_dir_tree( img_names:list, newdir:pathlib.PurePath ) :None
+      Creates a new directory with folders for each image,
+      all, and results.  If location exists, delete it first.
+  """
   if os.path.exists( newdir ):
     #if not shutil.rmtree.avoids_symlink_attacks:
     #  print( 'You are vulnerable to symlink attacks, please upgrade python or remove the output directory manualy.' )
@@ -95,16 +122,22 @@ def make_dir_tree( img_names, newdir ):
     shutil.rmtree( newdir )
 
   os.mkdir( newdir )
-  os.chdir( newdir )
+  #os.chdir( newdir )
   for i in img_names:
-    os.mkdir( i )
-  os.mkdir( 'all ' )
-  os.mkdir( 'results' )
-  os.chdir( '..' )
+    os.mkdir( newdir / i )
+  os.mkdir( newdir / 'all' )
+  os.mkdir( newdir / 'results' )
+  #os.chdir( '..' )
 
   return None
 
+#init 
 def copy_vitals( args ):
+  """ Function
+      copy_vitals( args:?ty ) :None
+      Copies all src files to the output dir as
+      not to alter the existing ones.
+  """
   shutil.copyfile(   args.script, args.output /        args.script.name)
   shutil.copyfile(    args.truth, args.output /         args.truth.name)
   shutil.copyfile( args.computed, args.output /      args.computed.name)
@@ -112,12 +145,21 @@ def copy_vitals( args ):
   shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
   return None
 
-def print_human_results( score, roc, destination, wipe=False ):
+#output 
+def print_human_results( score, roc, dst, wipe=False ):
+  """ Function
+      print_human_results( score:pathlib.PurePath,
+        roc:pathlib.PurePath, dst:pathlib.PurePath, 
+        wipe:bool 
+        ) :None
+      Prints a human-readable version of the results files.
+      Writes this data to dst.
+  """
   #Define a variable for the amount of data printed?
   #Make sure to append, or wipe clean
   #Takes full directory-like objects
-  if wipe and os.path.exists( destination ):
-    os.remove( destination )
+  if wipe and os.path.exists( dst ):
+    os.remove( dst )
 
   #Parentheticals are group(1) of re.search(l)
   rex_PD    = re.compile(      'Detection-Pd: (.*)' )
@@ -150,7 +192,7 @@ def print_human_results( score, roc, destination, wipe=False ):
     n_TN = l[6][5:]
     n_FN = l[7][5:]
 
-  with open( destination, 'a' ) as d:
+  with open( dst, 'a' ) as d:
     d.write( '\n' + '-'*40 + '\n' )
     d.write('Data for ' + score.parts[-2] + ':\n' )
     d.write( f'{"  # Computed Detections ":=<30}> {n_detComp:<10}' + '\n')
@@ -167,6 +209,7 @@ def print_human_results( score, roc, destination, wipe=False ):
       #print("none")
   return None
 
+#CSV
 def make_confidence_name_table( computed ):
   table = []
   #confidence to #, or to coordinates?
@@ -182,6 +225,7 @@ def make_confidence_name_table( computed ):
   
   return table
 
+#CSV
 def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
   if wipe and os.path.exists( destination ):
     os.remove( destination )
@@ -255,6 +299,7 @@ def make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
   #  print("\n\n\n")
   return table
 
+#CSV
 def update_tfpn( data, negatives ): #update true and false pos and neg, idk what else to call this function.
   TP = 0
   FP = 0
@@ -275,6 +320,7 @@ def update_tfpn( data, negatives ): #update true and false pos and neg, idk what
     i[10] = TP / (TP+FN)#Recall
   return data
 
+#CSV
 def combine_result_csv( data, negatives ):
   tupledata = []
   for i in data:
@@ -290,8 +336,9 @@ def combine_result_csv( data, negatives ):
 
   return newdat
 
+#CSV
 def print_csv( data, dest ):
-  print('Writing to: ' + str(dest))
+  #print('Writing to: ' + str(dest))
   with open(dest, 'w') as d:
     for i in data:
       writ = ''
@@ -302,60 +349,67 @@ def print_csv( data, dest ):
       d.write(writ)
   return None
 
+#CSV/PLOT
 def plot_pvr( data, dest=None ):
   """ 
       plot_pvr( data: , dest:pathlib.PurePath )
   """
   xs = []
   ys = []
-  n = []
+  #n = []
 
   for i in data:
-    xs += [i[ 9]]
-    ys += [i[10]]
-    n += [(i[9],i[10])]
+    xs += [i[10]]
+    ys += [i[ 9]]
+    #n += [(i[9],i[10])]
   plt.plot(xs,ys)
   #plt.plot(n,'rx')
-  plt.xlabel('Precision')
-  plt.ylabel('Recall')
-  plt.axis([1.0,0.9,0.0,1.0])
+  plt.ylabel('Precision')
+  plt.xlabel('Recall')
+  #plt.axis([0.0,1.0,0.0,1.0])
   if dest:
     plt.savefig(dest)
   else:
     plt.show()
   return None
 
+#output
 def get_results( img_names, args ):
-  print(args.res_file)
   roc_path = args.output / 'all' / 'output_roc.txt'
-  out_path = args.output / 'all' / 'output_score_tracks.txt'
+  sco_path = args.output / 'all' / 'output_score_tracks.txt'
   com_path = args.output / 'all' / 'computed_all.csv'
-  hum_path = args.output / 'results' / args.res_file
-  csv_path = args.output / 'results' / args.res_csv
+
+  hum_path   = args.results / 'results.txt'
+  csv_path   = args.results / 'precr.csv'
+  graph_path = args.results / 'PvR_graph.svg'
 
   #Do 'all' first
-  print_human_results( out_path, roc_path, hum_path, True )
+  #print_human_results( sco_path, roc_path, hum_path, True )
       #1: get human-readable data and print to args.res_file=
 
   data = []
   for i in img_names:
     roc_path = args.output / i / 'output_roc.txt'
-    out_path = args.output / i / 'output_score_tracks.txt'
+    sco_path = args.output / i / 'output_score_tracks.txt'
     com_path = args.output / i / ('computed_' + i + '.csv')
-    print_human_results( out_path, roc_path, hum_path )
+    print_human_results( sco_path, roc_path, hum_path )
     dictionary = make_confidence_name_table( com_path )
-    data += make_result_csv( out_path, roc_path, csv_path, dictionary )
+    data += make_result_csv( sco_path, roc_path, csv_path, dictionary )
 
   roc_path = args.output / 'all' / 'output_roc.txt'
-  out_path = args.output / 'all' / 'output_score_tracks.txt'
+  sco_path = args.output / 'all' / 'output_score_tracks.txt'
   com_path = args.output / 'all' / ('computed_all.csv')
-  print_human_results( out_path, roc_path, hum_path )
+  print_human_results( sco_path, roc_path, hum_path )
   dictionary = make_confidence_name_table( com_path )
-  tmp = make_result_csv( out_path, roc_path, csv_path, dictionary )
+  tmp = make_result_csv( sco_path, roc_path, csv_path, dictionary )[0]
 
-  total_TN = tmp[0][7]
-  total_FN = tmp[0][8]
+  total_TN = tmp[7]
+  total_FN = tmp[8]
   #Alter negatives based on the first entry:
+  #Note that the first entry of the data list subtracts 1 from
+  # one of the negatives (depending on if it's a TP or FP), 
+  # so it will always appear one less than the final count of 
+  # the positives.
   if tmp[3]:
     total_FN += 1
   elif tmp[4]:
@@ -369,8 +423,8 @@ def get_results( img_names, args ):
   #  print(i)
 
   #TODO: rename the file for csv
-  print_csv( pretty_data, args.results / 'precr.csv' )
-  plot_pvr( data, args.results / 'PvR_graph.svg' )
+  print_csv( pretty_data,   csv_path )
+  plot_pvr(         data, graph_path )
 
   return None
 
@@ -394,12 +448,12 @@ if __name__ == "__main__":
              help='Output directory for expanded folders.')
   parser.add_argument( '-results', default='results',
              help='Results folder name, stored within output dir.')
-  parser.add_argument( '-res_file', default='results.txt',
-             help='Specify a human-readable results txt file.')
-  parser.add_argument( '-res_csv', default='stats.csv',
-             help='Specify the csv file with calculated statistics.')
-  parser.add_argument( '-csv_by_file', default=None,
-             help='If true, CSV files will be created per image, not combined to one file.')
+  # parser.add_argument( '-res_file', default='results.txt',
+  #            help='Specify a name for the human-readable results txt file.')
+  # parser.add_argument( '-res_csv', default='stats.csv',
+  #            help='Specify the csv file with calculated statistics.')
+  # parser.add_argument( '-csv_by_file', default=None,
+  #            help='If true, CSV files will be created per image, not combined to one file.')
 
   # Configs?
   #overlap
@@ -427,7 +481,7 @@ if __name__ == "__main__":
     sys.exit( 0 )
 
   if os.path.exists(args.output):
-    print( 'Warning: directory already exists and will be overwritten' )
+    print( 'Warning: directory already exists and will be overwritten: ', args.output )
 
   cwd = os.getcwd()
 
@@ -451,7 +505,7 @@ if __name__ == "__main__":
 
   #create a new truth file for each image
   ###os.chdir(args.output)
-  ###create_subtrack_files( img_names, args )
+  ###create_subtrack_files( img_names, args.output, args.truth, args.computed )
   ###move_subtrack_files(   img_names, args )
 
   #make the scripts

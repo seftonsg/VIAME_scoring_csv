@@ -49,7 +49,7 @@ def _make_scripts( img_names, args ):
 
 def _script_handler( exec_, argv=None ):
   """ Internal Function
-      _script_handler( exec_:pathlib.PurePath, argv:list ) :handle.returncode?
+      _script_handler( exec_:pathlib.PurePath, argv:list ) :handle.returncode?ty
       Give a script name and arguments, this will run it.
       Written specifically for VIAME scoring_roc scripts.
   """
