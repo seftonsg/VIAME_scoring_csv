@@ -216,6 +216,38 @@ def _print_csv( data, dest ):
       d.write(writ)
   return None
 
+def _simplify_data( xs, ys ):
+  """ Internal Function
+      _simplify_data( xs:list, ys:list) :list, list
+      Given the xs and ys for all points, creates a 
+      square-like wave that drops only to the next
+      highest point.  Calculations are done on an
+      inverted list to help find local maxima.
+      Note: does not add 0,0 and 1,0.
+  """
+  nxs  = [xs[-1]]
+  nys  = [ys[-1]]
+  curr = ys[-1]
+  for i in range(len(ys))[::-1]:
+    if ys[i] > curr:
+      curr = ys[i]
+      #add a point level to the old one
+      nxs += [xs[i]]
+      nys += [nys[-1]]
+      #add new highest point
+      nxs += [xs[i]]
+      nys += [ys[i]]
+
+  nxs += [xs[0]]
+  nys += [ys[0]]
+
+  #for i in range(len(nxs)):
+  #  print(f'{nxs[i]:.5f}, {nys[i]:.5f}')
+  
+
+  return nxs, nys
+
+
 #CSV/PLOT
 def _plot_pvr( data, dest=None ):
   """ 
@@ -229,11 +261,13 @@ def _plot_pvr( data, dest=None ):
     xs += [i[10]]
     ys += [i[ 9]]
     #n += [(i[9],i[10])]
-  plt.plot(xs,ys)
+  xs, ys = _simplify_data(xs, ys)
+  plt.plot(xs,ys,color='red')
   #plt.plot(n,'rx')
   plt.ylabel('Precision')
   plt.xlabel('Recall')
-  #plt.axis([0.0,1.0,0.0,1.0])
+  #plt.fill([0]+xs+[1],[0]+ys+[0])
+  plt.axis([0.0,1.0,0.0,1.0])
   if dest:
     plt.savefig(dest)
   else:
