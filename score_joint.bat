@@ -2,7 +2,7 @@
 
 REM Setup VIAME Paths (no need to set if installed to registry or already set up)
 
-SET VIAME_INSTALL=C:\VIAME-v0.9.13
+SET VIAME_INSTALL=C:\VIAME-v0.9.15
 
 CALL "%VIAME_INSTALL%\setup_viame.bat"
 
