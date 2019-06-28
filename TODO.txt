@@ -12,3 +12,12 @@ Figure out which type of metric I should use:
 	my Idea: AP/image, AP/category, where AP is the graph Reimann Sum
 
 Remove Matt's scoring script from mine entirely, directly call his .exe scoring function(s).  Maybe even write my IoU calculator because I don't understand his fully.
+
+
+Example run (remove newlines):
+python.exe expander.py 
+-truth    tracks/TRUTHS_ML4.csv 
+-computed tracks/1c_tracks_CRNN_ML4.csv 
+-images image_frames_ML4 
+-script score_joint.bat 
+-output 1crnn
