@@ -146,7 +146,7 @@ def copy_vitals( args ):
   shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
   return None
 
-
+#Main
 if __name__ == "__main__":
   parser = argparse.ArgumentParser( description = 'Creates scoring directories by the image' )
 
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     sys.exit( 0 )
 
   if os.path.exists(args.output):
-    print( 'Warning: directory already exists and will be overwritten: ', args.output )
+    print( 'Warning: Directory already exists and will be overwritten: ', args.output )
 
   cwd = os.getcwd()
 

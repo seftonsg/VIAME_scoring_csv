@@ -10,6 +10,8 @@ import re
 import os
 import pathlib
 import matplotlib.pyplot as plt
+#Custom
+import utils
 
 
 #output 
@@ -78,6 +80,13 @@ def _print_human_results( score, roc, dst, wipe=False ):
 
 #CSV
 def _make_confidence_name_table( computed ):
+  """ Internal Function
+      _make_confidence_name_table( 
+        computed:pathlib.PurePath 
+        ) :list<(float, string)>
+      Given a computed-annotations csv file, returns
+      a lookup table of confidence and annotation name.
+  """
   table = []
   #confidence to #, or to coordinates?
   with open( computed ) as c:
@@ -93,9 +102,22 @@ def _make_confidence_name_table( computed ):
   return table
 
 #CSV
-def _make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
-  if wipe and os.path.exists( destination ):
-    os.remove( destination )
+def _make_result_csv( score, roc, dest, dictionary=None, wipe=False ):
+  """ Internal Function
+      _make_result_csv( score:pathlib.PurePath
+        roc :pathlib.PurePath
+        dest:pathlib.PurePath
+        dictionary:list<float, str>
+        wipe:bool
+      ) :list
+      Given the output files, creates a table of each annotation,
+      marks if it's a true or false positive and counts the
+      accumulation of TP/FP/TN/FN (though the negatives need 
+      some work).  This is mostly a parser of the csv file.
+      Returns said table, who's elements are shown below.
+  """
+  if wipe and os.path.exists( dest ):
+    os.remove( dest )
 
   table = []
   #Image, Name, Confidence, T, F, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
@@ -168,6 +190,14 @@ def _make_result_csv( score, roc, destination, dictionary=None, wipe=False ):
 
 #CSV
 def _update_tfpn( data, negatives ): #update true and false pos and neg, idk what else to call this function.
+  """ Internal Function
+      _update_tfpn( data:list, negatives:(int,int) 
+      ) :list
+      Given a list of annotation objects, this recalculates
+      the accumulated TP,FP,TN,FN, and the Precision and
+      Recall metrics.  Returns said data list, but if this
+      is pass by reference, the return is unecessary.
+  """
   TP = 0
   FP = 0
   TN = negatives[0]
@@ -189,6 +219,15 @@ def _update_tfpn( data, negatives ): #update true and false pos and neg, idk wha
 
 #CSV
 def _combine_result_csv( data, negatives ):
+  """ Internal Function
+      _combine_result_csv( data:list, negatives:(int,int)
+      ) :list
+      Given an unordered list of annotation data, and the
+      caps for true/false negatives.  This reorganizes
+      the data, updates the accumulated data #s (with
+      a helper function), and returns the sorted and 
+      recalculated list.
+  """
   tupledata = []
   for i in data:
     tupledata += [( i[2], i )]
@@ -205,15 +244,18 @@ def _combine_result_csv( data, negatives ):
 
 #CSV
 def _print_csv( data, dest ):
+  """ Internal Function
+      _print_csv( data:list, dest:pathlib.PurePath ) :None
+      Prints the data to the destination after formatting.
+      This is its own function.  It uses utils for now,
+      but I may remove or alter parts of the data before
+      sending them to ltos_csv, hence the function.
+  """
   #print('Writing to: ' + str(dest))
   with open(dest, 'w') as d:
     for i in data:
-      writ = ''
-      for j in i:
-        writ += str(j)
-        writ += ','
-      writ = writ[:-1] + '\n'
-      d.write(writ)
+      #remove some parts of i?
+      d.write(utils.ltos_csv(i) + '\n')
   return None
 
 #PLOT
@@ -253,6 +295,8 @@ def _simplify_data( xs, ys ):
 def _plot_pvr( data, dest=None ):
   """ 
       plot_pvr( data: , dest:pathlib.PurePath ) :None
+      Plots the Precision-Recall curve from the data
+      and saves the graph to dest.
   """
   xs = []
   ys = []
@@ -277,6 +321,11 @@ def _plot_pvr( data, dest=None ):
 
 #output
 def get_results( img_names, args ):
+  """ Function
+      get_results( img_names:list args:?ty ) :None
+      Produces the results and writes them to the
+      results directory (args.output / args.results)
+  """
   roc_path = args.output / 'all' / 'output_roc.txt'
   sco_path = args.output / 'all' / 'output_score_tracks.txt'
   com_path = args.output / 'all' / 'computed_all.csv'
