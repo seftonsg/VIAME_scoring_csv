@@ -223,14 +223,13 @@ if __name__ == "__main__":
   #copy_vitals( args )
 
   #create a new truth file for each image
-  #os.chdir(args.output)
   #create_subtrack_files( img_names, args.output, args.truth, args.computed )
   #move_subtrack_files(   img_names, args.output )
 
   #make the scripts
   #exec_score.run_scripts(  img_names, args )
-  #os.chdir( '..' )
 
+  #make the results
   output_gen.get_results( img_names, args )
 
   print( 'Done\n' )

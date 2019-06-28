@@ -216,6 +216,7 @@ def _print_csv( data, dest ):
       d.write(writ)
   return None
 
+#PLOT
 def _simplify_data( xs, ys ):
   """ Internal Function
       _simplify_data( xs:list, ys:list) :list, list
@@ -248,10 +249,10 @@ def _simplify_data( xs, ys ):
   return nxs, nys
 
 
-#CSV/PLOT
+#PLOT
 def _plot_pvr( data, dest=None ):
   """ 
-      plot_pvr( data: , dest:pathlib.PurePath )
+      plot_pvr( data: , dest:pathlib.PurePath ) :None
   """
   xs = []
   ys = []

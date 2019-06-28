@@ -1,0 +1,14 @@
+TODO:
+normalize graph lines (turn it into a square stepping system, remove the curves)
+Document output_gen.py
+Make TN and FN have meaning in results.txt
+
+Determine diff(confidence, IoU) and how to control both with my script.
+Figure out which type of metric I should use:
+	mAP @ [.50, .95]:.05 IOU  - 101 Approx points per graph
+	AP  @ [.50] IOU           - "
+	AP  @ [.75] IOU           - "
+
+	my Idea: AP/image, AP/category, where AP is the graph Reimann Sum
+
+Remove Matt's scoring script from mine entirely, directly call his .exe scoring function(s).  Maybe even write my IoU calculator because I don't understand his fully.
