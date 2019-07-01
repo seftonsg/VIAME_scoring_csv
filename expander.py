@@ -15,7 +15,6 @@ import argparse
 import subprocess
 import pathlib 
 #Custom imports
-#sys.path += [os.getcwd() + '/modules']
 import modules.utils      as utils
 import modules.output_gen as output_gen
 import modules.exec_score as exec_score

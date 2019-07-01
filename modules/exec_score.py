@@ -10,7 +10,7 @@ import subprocess
 import os
 import pathlib
 #Custom
-import modules.utils
+import modules.utils as utils
 
 #scoring
 def _make_scripts( img_names, args ):
