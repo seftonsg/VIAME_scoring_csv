@@ -1,0 +1,8 @@
+epoch_15
+epoch_20
+epoch_25
+epoch_30
+epoch_35
+epoch_40
+epoch_45
+epoch_50
