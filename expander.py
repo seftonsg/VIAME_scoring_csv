@@ -15,10 +15,10 @@ import argparse
 import subprocess
 import pathlib 
 #Custom imports
-import utils
-import exec_score
-import output_gen
-
+#sys.path += [os.getcwd() + '/modules']
+import modules.utils      as utils
+import modules.output_gen as output_gen
+import modules.exec_score as exec_score
 
 #init
 def get_imgs( directory ):
