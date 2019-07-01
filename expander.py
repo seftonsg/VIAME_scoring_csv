@@ -1,6 +1,11 @@
 #!/usr/bin/python
-
-#expander.py
+########################################
+#  Sage Sefton
+#  A scoring script for multiple
+#  images, by category (wip), human
+#  readable outputs, and graphs.
+#  2019 06 26
+########################################
 
 import os
 import re

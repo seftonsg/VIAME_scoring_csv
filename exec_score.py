@@ -12,6 +12,7 @@ import pathlib
 #Custom
 import utils
 
+#scoring
 def _make_scripts( img_names, args ):
   """ Internal Function
       _make_scripts( img_names:list, args:?ty ) :None
@@ -47,6 +48,7 @@ def _make_scripts( img_names, args ):
           o.write(l)
   return None
 
+#scoring
 def _script_handler( exec_, argv=None ):
   """ Internal Function
       _script_handler( exec_:pathlib.PurePath, argv:list ) :handle.returncode?ty
@@ -88,6 +90,7 @@ def _script_handler( exec_, argv=None ):
 
   return handle.returncode
 
+#scoring
 def run_scripts( img_names, args ):
   """ _ Function
       run_scripts( img_names:list, args:?ty ) :None

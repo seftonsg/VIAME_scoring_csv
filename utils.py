@@ -10,6 +10,7 @@ import os
   #make_pure_path
 
 
+#conversion
 def ltos_csv( l ):
   """ Util Function
       ltos_csv( l:list ) :string
@@ -20,6 +21,7 @@ def ltos_csv( l ):
     w += str(i) + ','
   return w[:-1]
 
+#conversion
 def make_PurePath( loc ):
   """ Util Function
       make_PurePath( loc:string ) :pathlib.PurePath
