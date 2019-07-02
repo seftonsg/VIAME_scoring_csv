@@ -186,14 +186,14 @@ def _make_PvR_csv( score, roc, dest, dictionary=None, wipe=False ):
   return table
 
 #CSV
-def _update_tfpn( data, negatives ): #update true and false pos and neg, idk what else to call this function.
+def _update_tfpn( data, negatives ): 
   """ Internal Function
       _update_tfpn( data:list, negatives:(int,int) 
       ) :list
       Given a list of annotation objects, this recalculates
       the accumulated TP,FP,TN,FN, and the Precision and
-      Recall metrics.  Returns said data list, but if this
-      is pass by reference, the return is unecessary.
+      Recall metrics.  Returns said data list. (If this
+      is pass by reference, the return is unecessary.)
   """
   TP = 0
   FP = 0
@@ -287,7 +287,6 @@ def _simplify_data( xs, ys ):
 
   return nxs, nys
 
-
 #PLOT
 def _plot_pvr( data, dest=None ):
   """ Internal Function
@@ -315,26 +314,6 @@ def _plot_pvr( data, dest=None ):
   else:
     plt.show()
   return None
-
-def _get_negatives( truths, scorefile):
-  """ Internal Function
-      _get_negatives( truths   :pathlib.PurePath
-                      scorefile:pathlib.PurePath 
-                    ): (int,int)
-  """
-  f_negs = utils.get_num_lines(truths)
-  #t_negs === #false annotations
-  t_negs = 0
-
-  #Parentheticals are group(1) of re.search(l)
-  rex_FA = re.compile( 'Detection-FA: (.*)' )
-  with open(scorefile) as s:
-    for l in s:
-      if rex_FA.search(l):
-        t_negs = int(rex_FA.search(l).group(1))
-  
-  return t_negs, f_negs
-
 
 #output
 def get_results( img_names, args ):
@@ -367,7 +346,7 @@ def get_results( img_names, args ):
     cumulative_data += data
 
 
-  data = _combine_result_csv( data, _get_negatives(args.truth, score_path) )
+  data = _combine_result_csv( data, utils.get_negatives(args.truth, score_path) )
   header = ['Image Name','Annotation Name','Confidence Score','True','False','# True Positives','# False Positives','# True Negatives','# False Negatives','Precision','Recall']
   types = ['str','str','float','bool','bool','int','int','int','int','float','float']
   pretty_data = [header] + [types] + data

@@ -8,8 +8,29 @@ import pathlib
   #make_pure_path
 import os
   #make_pure_path
+import re
+  #get_negatives
 
-#
+#GET
+#TODO: rename, this name doesn't make sense
+def get_negatives( truths, scorefile):
+  """ Util Function
+      _get_negatives( truths   :pathlib.PurePath
+                      scorefile:pathlib.PurePath 
+                    ): (int,int)
+  """
+  f_negs = get_num_lines(truths)
+
+  #Parentheticals are group(1) of re.search(l)
+  rex_FA = re.compile( 'Detection-FA: (.*)' )
+  with open(scorefile) as s:
+    for l in s:
+      if rex_FA.search(l):
+        t_negs = int(rex_FA.search(l).group(1))
+  
+  return t_negs, f_negs
+
+#GET
 def get_num_lines( file ):
   """ Util Function
       get_lines( file:pathlib.PurePath): int
@@ -23,7 +44,7 @@ def get_num_lines( file ):
   return i
 
 
-#conversion
+#CONVERT
 def ltos_csv( l ):
   """ Util Function
       ltos_csv( l:list ) :string
@@ -34,7 +55,7 @@ def ltos_csv( l ):
     w += str(i) + ','
   return w[:-1]
 
-#conversion
+#CONVERT
 def make_PurePath( loc ):
   """ Util Function
       make_PurePath( loc:string ) :pathlib.PurePath
