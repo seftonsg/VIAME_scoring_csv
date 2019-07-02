@@ -99,7 +99,7 @@ def _make_confidence_name_table( computed ):
   return table
 
 #CSV
-def _make_result_csv( score, roc, dest, dictionary=None, wipe=False ):
+def _make_PvR_csv( score, roc, dest, dictionary=None, wipe=False ):
   """ Internal Function
       _make_result_csv( score:pathlib.PurePath
         roc :pathlib.PurePath
@@ -290,7 +290,7 @@ def _simplify_data( xs, ys ):
 
 #PLOT
 def _plot_pvr( data, dest=None ):
-  """ 
+  """ Internal Function
       plot_pvr( data: , dest:pathlib.PurePath ) :None
       Plots the Precision-Recall curve from the data
       and saves the graph to dest.
@@ -316,63 +316,66 @@ def _plot_pvr( data, dest=None ):
     plt.show()
   return None
 
+def _get_negatives( truths, scorefile):
+  """ Internal Function
+      _get_negatives( truths   :pathlib.PurePath
+                      scorefile:pathlib.PurePath 
+                    ): (int,int)
+  """
+  f_negs = utils.get_num_lines(truths)
+  #t_negs === #false annotations
+  t_negs = 0
+
+  #Parentheticals are group(1) of re.search(l)
+  rex_FA = re.compile( 'Detection-FA: (.*)' )
+  with open(scorefile) as s:
+    for l in s:
+      if rex_FA.search(l):
+        t_negs = int(rex_FA.search(l).group(1))
+  
+  return t_negs, f_negs
+
+
 #output
 def get_results( img_names, args ):
   """ Function
       get_results( img_names:list args:?ty ) :None
       Produces the results and writes them to the
       results directory (args.output / args.results)
-  """
-  roc_path = args.output / 'all' / 'output_roc.txt'
-  sco_path = args.output / 'all' / 'output_score_tracks.txt'
-  com_path = args.output / 'all' / 'computed_all.csv'
-
+  """ 
   hum_path   = args.results / 'results.txt'
-  csv_path   = args.results / 'precr.csv'
+  csv_path   = args.results / 'PvR_table.csv'
   graph_path = args.results / 'PvR_graph.svg'
 
   #Do 'all' first
-  #print_human_results( sco_path, roc_path, hum_path, True )
-      #1: get human-readable data and print to args.res_file=
+  roc_path   = args.output / 'all' / 'output_roc.txt'
+  score_path = args.output / 'all' / 'output_score_tracks.txt'
+  comp_path  = args.output / 'all' / ('computed_all.csv')
+  _print_human_results( score_path, hum_path, True )
 
-  data = []
+  cumulative_data = []
   for i in img_names:
-    roc_path = args.output / i / 'output_roc.txt'
-    sco_path = args.output / i / 'output_score_tracks.txt'
-    com_path = args.output / i / ('computed_' + i + '.csv')
-    _print_human_results( sco_path, roc_path, hum_path )
-    dictionary = _make_confidence_name_table( com_path )
-    data += _make_result_csv( sco_path, roc_path, csv_path, dictionary )
+    roc_path    = args.output / i / 'output_roc.txt'
+    score_path  = args.output / i / 'output_score_tracks.txt'
+    comp_path   = args.output / i / ('computed_' + i + '.csv')
+    in_csv_path = args.output / i / ('PvR_sub-table_' + i + '.csv')
+    _print_human_results( score_path, hum_path )
 
-  roc_path = args.output / 'all' / 'output_roc.txt'
-  sco_path = args.output / 'all' / 'output_score_tracks.txt'
-  com_path = args.output / 'all' / ('computed_all.csv')
-  _print_human_results( sco_path, roc_path, hum_path )
-  dictionary = _make_confidence_name_table( com_path )
-  tmp = _make_result_csv( sco_path, roc_path, csv_path, dictionary )[0]
+    dictionary = _make_confidence_name_table( comp_path )
+    data = _make_PvR_csv( score_path, roc_path, csv_path, dictionary )
+    _print_csv( data, in_csv_path )
+    cumulative_data += data
 
-  total_TN = tmp[7]
-  total_FN = tmp[8]
-  #Alter negatives based on the first entry:
-  #Note that the first entry of the data list subtracts 1 from
-  # one of the negatives (depending on if it's a TP or FP), 
-  # so it will always appear one less than the final count of 
-  # the positives.
-  if tmp[3]:
-    total_FN += 1
-  elif tmp[4]:
-    total_TN += 1
 
-  data = _combine_result_csv( data, (total_TN, total_FN) )
+  data = _combine_result_csv( data, _get_negatives(args.truth, score_path) )
   header = ['Image Name','Annotation Name','Confidence Score','True','False','# True Positives','# False Positives','# True Negatives','# False Negatives','Precision','Recall']
   types = ['str','str','float','bool','bool','int','int','int','int','float','float']
   pretty_data = [header] + [types] + data
   #for i in data:
   #  print(i)
 
-  #TODO: rename the file for csv
   _print_csv( pretty_data,   csv_path )
-  _plot_pvr(         data, graph_path )
+  _plot_pvr (        data, graph_path )
 
   return None
 
