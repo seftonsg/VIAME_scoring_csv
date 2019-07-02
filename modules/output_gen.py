@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 #Custom
 import modules.utils as utils
 
-
 #output 
 def _print_human_results( score, dst, wipe=False ):
   """ Internal Function
@@ -25,39 +24,40 @@ def _print_human_results( score, dst, wipe=False ):
   """
   #Define a variable for the amount of data printed?
   #Make sure to append, or wipe clean
-  #Takes full directory-like objects
   if wipe and os.path.exists( dst ):
     os.remove( dst )
 
   #Parentheticals are group(1) of re.search(l)
   rex_PD    = re.compile(      'Detection-Pd: (.*)' )
-  rex_FA    = re.compile(      'Detection-FA: (.*)' )
+  rex_FDet  = re.compile(      'Detection-FA: (.*)' )
   rex_PFA   = re.compile(     'Detection-PFA: (.*)' )
   rex_TrDet = re.compile(   'n-gt-detections: (.*)' )
   rex_CoDet = re.compile( 'n-comp-detections: (.*)' )
 
+  #Get #detections (T/C) and probabilities
+  #Note the probabilities are a simple calc. of the confusion matrix.
   with open( score ) as s:
     for l in s:
+      # Numbers
       if rex_TrDet.search(l):
         n_detTrue = int(rex_TrDet.search(l).group(1))
       if rex_CoDet.search(l):
         n_detComp = int(rex_CoDet.search(l).group(1))
-
+      if rex_FDet.search(l):
+        n_FDet = int(l[16:])
+      # Probabilities
       if rex_PD.search(l):
         p_TP = float(rex_PD.search(l).group(1))
       if rex_PFA.search(l):
         p_FP = float(rex_PFA.search(l).group(1))
-      #if rex_PTN.search(l):
-      #if rex_PFN.search(l):
-      
-      if rex_FA.search(l):
-        n_FA = int(l[16:])
 
-  n_TP = n_detComp - n_FA
-  n_FP = n_FA
+  # Calculate TPFNs, (rank 2 confusion matrix)
+  n_TP = n_detComp - n_FDet
+  n_FP = n_FDet
   n_TN = 0
   n_FN = n_detTrue - n_TP
 
+  # Print data to file
   with open( dst, 'a' ) as d:
     d.write( '\n' + '-'*40 + '\n' )
     d.write('Data for ' + score.parts[-2] + ':\n' )
@@ -68,11 +68,9 @@ def _print_human_results( score, dst, wipe=False ):
     d.write( f'{"  # False Positives (FP) ":=<30}> {n_FP:<10}' + '\n')
     d.write( f'{"  # True  Negatives (TN) ":=<30}> {n_TN:<10}' + '\n')
     d.write( f'{"  # False Negatives (FN) ":=<30}> {n_FN:<10}' + '\n')
-    #d.write( f'{"  # False Positives ":=<30}> {n_FA:<10}' + '\n' )
     d.write('\n')
     d.write( f'{"  P {True Positive} ":=<30}> {p_TP:<10.5f}' + '\n' )
     d.write( f'{"  P {False Positive} ":=<30}> {p_FP:<10.5f}' + '\n' )
-      #print("none")
   return None
 
 #CSV
