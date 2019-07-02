@@ -9,6 +9,19 @@ import pathlib
 import os
   #make_pure_path
 
+#
+def get_num_lines( file ):
+  """ Util Function
+      get_lines( file:pathlib.PurePath): int
+      Returns the number of lines of a file.
+  """
+  i = 0
+  with open(file) as f:
+    for l in f:
+      i += 1
+
+  return i
+
 
 #conversion
 def ltos_csv( l ):
