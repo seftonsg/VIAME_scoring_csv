@@ -57,6 +57,15 @@ def _print_human_results( score, dst, wipe=False ):
   n_TN = 0
   n_FN = n_detTrue - n_TP
 
+  # Various Metrics, confusion matrix formula included
+  sensitivity = n_TP / (n_TP + n_FN) #A/(A+C) 
+  specificity = 0
+  precision   = n_TP / (n_TP + n_FP) #A/(A+B)
+  recall      = sensitivity
+  f1_score    = (2 * precision * recall) / (precision + recall) #higher is better
+  b_accuracy  = (sensitivity + specificity) / 2
+  AUROC       = "TODO: haha I'm not there yet"
+
   # Print data to file
   with open( dst, 'a' ) as d:
     d.write( '\n' + '-'*40 + '\n' )
@@ -66,11 +75,18 @@ def _print_human_results( score, dst, wipe=False ):
     d.write('\n')
     d.write( f'{"  # True  Positives (TP) ":=<30}> {n_TP:<10}' + '\n')
     d.write( f'{"  # False Positives (FP) ":=<30}> {n_FP:<10}' + '\n')
-    d.write( f'{"  # True  Negatives (TN) ":=<30}> {n_TN:<10}' + '\n')
+    #d.write( f'{"  # True  Negatives (TN) ":=<30}> {n_TN:<10}' + '\n')
+    d.write( f'{"  # True  Negatives (TN) ":=<30}> NA' + '\n')
     d.write( f'{"  # False Negatives (FN) ":=<30}> {n_FN:<10}' + '\n')
     d.write('\n')
-    d.write( f'{"  P {True Positive} ":=<30}> {p_TP:<10.5f}' + '\n' )
-    d.write( f'{"  P {False Positive} ":=<30}> {p_FP:<10.5f}' + '\n' )
+    d.write( f'{"  P {True Positive} ":=<30}> {p_TP:<.5f}'  + '\n' )
+    d.write( f'{"  P {False Positive} ":=<30}> {p_FP:<.5f}' + '\n' )
+    d.write('\n')
+    d.write( f'{"  Sensitivity ":=<30}> {sensitivity:<.5f}' + '\n')
+    #d.write( f'{"  Specificity ":=<30}> {specificity:<.5f}' + '\n')
+    #d.write( f'{"  Specificity ":=<30}> NA' + '\n')
+    d.write( f'{"  Precision ":=<30}> {precision:<.5f}'     + '\n')
+    d.write( f'{"  Precision ":=<30}> {precision:<.5f}'     + '\n')
   return None
 
 #CSV
@@ -115,16 +131,17 @@ def _make_PvR_csv( score, roc, dest, dictionary=None, wipe=False ):
     os.remove( dest )
 
   table = []
-  #Image, Name, Confidence, T, F, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall
+  #Image, Name, Confidence, T, F, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall,
+  #Specificity,
 
   with open(roc) as r:
-    previous = [None] * 11
+    previous = [None] * 12
     for l in r:
       l = l.strip().split(';')
       conf = float(l[0][16:])
 
       #TODO: convert to enumerated?  dictionary-like?
-      entry = [None] * 11
+      entry = [None] * 12
       entry[ 0] = score.parts[-2]
       #entry += [conf]
       entry[ 2] = conf
@@ -209,7 +226,8 @@ def _update_tfpn( data, negatives ):
     i[ 7] = TN   #TN
     i[ 8] = FN   #FN
     i[ 9] = TP / (TP+FP)#Precision
-    i[10] = TP / (TP+FN)#Recall
+    i[10] = TP / (TP+FN)#Recall / Sensitivity
+    i[11] = TN / (FP+TN)#Specificity
   return data
 
 #CSV
@@ -267,7 +285,7 @@ def _simplify_data( xs, ys ):
   nys  = [ys[-1]]
   curr = ys[-1]
   for i in range(len(ys))[::-1]:
-    if ys[i] > curr:
+    if ys[i] < curr:
       curr = ys[i]
       #add a point level to the old one
       nxs += [xs[i]]
@@ -297,14 +315,14 @@ def _plot_pvr( data, dest=None ):
   #n = []
 
   for i in data:
-    xs += [i[10]]
-    ys += [i[ 9]]
+    xs += [1 - i[11]]
+    ys += [    i[10]]
     #n += [(i[9],i[10])]
   xs, ys = _simplify_data(xs, ys)
   plt.plot(xs,ys,color='red')
   #plt.plot(n,'rx')
-  plt.ylabel('Precision')
-  plt.xlabel('Recall')
+  plt.ylabel('Sensitivity (AKA Recall)')
+  plt.xlabel('1 - Specificity')
   #plt.fill([0]+xs+[1],[0]+ys+[0])
   plt.axis([0.0,1.0,0.0,1.0])
   if dest:
@@ -330,7 +348,8 @@ def get_results( img_names, args ):
   comp_path  = args.output / 'all' / ('computed_all.csv')
   _print_human_results( score_path, hum_path, True )
 
-  cumulative_data = []
+  #Do by image
+  c_data = [] #cumulative
   for i in img_names:
     roc_path    = args.output / i / 'output_roc.txt'
     score_path  = args.output / i / 'output_score_tracks.txt'
@@ -341,18 +360,22 @@ def get_results( img_names, args ):
     dictionary = _make_confidence_name_table( comp_path )
     data = _make_PvR_csv( score_path, roc_path, csv_path, dictionary )
     _print_csv( data, in_csv_path )
-    cumulative_data += data
+    c_data += data
 
-
-  data = _combine_result_csv( data, utils.get_negatives(args.truth, score_path) )
-  header = ['Image Name','Annotation Name','Confidence Score','True','False','# True Positives','# False Positives','# True Negatives','# False Negatives','Precision','Recall']
-  types = ['str','str','float','bool','bool','int','int','int','int','float','float']
-  pretty_data = [header] + [types] + data
+  negs = utils.get_negatives(args.truth, (args.output / 'all' / 'output_score_tracks.txt'))
+  c_data = _combine_result_csv( c_data, negs )
+  header = ['Image Name','Annotation Name','Confidence Score',
+            'True','False',
+            '# True Positives','# False Positives','# Inv FP','# False Negatives',
+            'Precision','Recall',
+            'Specificity']
+  types = ['str','str','float','bool','bool','int','int','int','int','float','float','float']
+  pretty_data = [header] + [types] + c_data
   #for i in data:
   #  print(i)
 
   _print_csv( pretty_data,   csv_path )
-  _plot_pvr (        data, graph_path )
+  _plot_pvr (      c_data, graph_path )
 
   return None
 
