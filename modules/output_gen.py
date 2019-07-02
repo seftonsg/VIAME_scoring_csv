@@ -15,11 +15,10 @@ import modules.utils as utils
 
 
 #output 
-def _print_human_results( score, roc, dst, wipe=False ):
-  """ Function
-      print_human_results( score:pathlib.PurePath,
-        roc:pathlib.PurePath, dst:pathlib.PurePath, 
-        wipe:bool 
+def _print_human_results( score, dst, wipe=False ):
+  """ Internal Function
+      _print_human_results( score:pathlib.PurePath,
+        dst:pathlib.PurePath, wipe:bool 
         ) :None
       Prints a human-readable version of the results files.
       Writes this data to dst.
@@ -42,7 +41,7 @@ def _print_human_results( score, roc, dst, wipe=False ):
       if rex_TrDet.search(l):
         n_detTrue = int(rex_TrDet.search(l).group(1))
       if rex_CoDet.search(l):
-        n_detComp = rex_CoDet.search(l).group(1)
+        n_detComp = int(rex_CoDet.search(l).group(1))
 
       if rex_PD.search(l):
         p_TP = float(rex_PD.search(l).group(1))
@@ -54,12 +53,10 @@ def _print_human_results( score, roc, dst, wipe=False ):
       if rex_FA.search(l):
         n_FA = int(l[16:])
 
-  with open( roc ) as r:
-    l = r.read(256).split(';')
-    n_TP = l[4][5:]
-    n_FP = l[5][5:]
-    n_TN = l[6][5:]
-    n_FN = l[7][5:]
+  n_TP = n_detComp - n_FA
+  n_FP = n_FA
+  n_TN = 0
+  n_FN = n_detTrue - n_TP
 
   with open( dst, 'a' ) as d:
     d.write( '\n' + '-'*40 + '\n' )
