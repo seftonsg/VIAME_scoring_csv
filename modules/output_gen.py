@@ -58,35 +58,32 @@ def _print_human_results( score, dst, wipe=False ):
   n_FN = n_detTrue - n_TP
 
   # Various Metrics, confusion matrix formula included
-  sensitivity = n_TP / (n_TP + n_FN) #A/(A+C) 
-  specificity = 0
+  sensitivity = n_TP / (n_TP + n_FN) #A/(A+C)
   precision   = n_TP / (n_TP + n_FP) #A/(A+B)
   recall      = sensitivity
-  f1_score    = (2 * precision * recall) / (precision + recall) #higher is better
-  b_accuracy  = (sensitivity + specificity) / 2
+  f1_score    = (2 * precision * recall) / (precision + recall) #higher is better=
   AUROC       = "TODO: haha I'm not there yet"
 
   # Print data to file
   with open( dst, 'a' ) as d:
     d.write( '\n' + '-'*40 + '\n' )
     d.write('Data for ' + score.parts[-2] + ':\n' )
-    d.write( f'{"  # Computed Detections ":=<30}> {n_detComp:<10}' + '\n')
-    d.write( f'{"  # True Detections ":=<30}> {n_detTrue:<10}' + '\n')
+    d.write( f'{"  # Computed Detections ":=<30}> {n_detComp:<10}' + '\n' )
+    d.write( f'{"  # True Detections ":=<30}> {n_detTrue:<10}' + '\n' )
     d.write('\n')
-    d.write( f'{"  # True  Positives (TP) ":=<30}> {n_TP:<10}' + '\n')
-    d.write( f'{"  # False Positives (FP) ":=<30}> {n_FP:<10}' + '\n')
+    d.write( f'{"  # True  Positives (TP) ":=<30}> {n_TP:<10}' + '\n' )
+    d.write( f'{"  # False Positives (FP) ":=<30}> {n_FP:<10}' + '\n' )
     #d.write( f'{"  # True  Negatives (TN) ":=<30}> {n_TN:<10}' + '\n')
-    d.write( f'{"  # True  Negatives (TN) ":=<30}> NA' + '\n')
-    d.write( f'{"  # False Negatives (FN) ":=<30}> {n_FN:<10}' + '\n')
+    d.write( f'{"  # True  Negatives (TN) ":=<30}> NA'         + '\n' )
+    d.write( f'{"  # False Negatives (FN) ":=<30}> {n_FN:<10}' + '\n' )
     d.write('\n')
     d.write( f'{"  P {True Positive} ":=<30}> {p_TP:<.5f}'  + '\n' )
     d.write( f'{"  P {False Positive} ":=<30}> {p_FP:<.5f}' + '\n' )
     d.write('\n')
-    d.write( f'{"  Sensitivity ":=<30}> {sensitivity:<.5f}' + '\n')
-    #d.write( f'{"  Specificity ":=<30}> {specificity:<.5f}' + '\n')
-    #d.write( f'{"  Specificity ":=<30}> NA' + '\n')
-    d.write( f'{"  Precision ":=<30}> {precision:<.5f}'     + '\n')
-    d.write( f'{"  Precision ":=<30}> {precision:<.5f}'     + '\n')
+    d.write( f'{"  Sensitivity ":=<30}> {sensitivity:<.5f}' + '\n' )
+    d.write( f'{"  Precision ":=<30}> {precision:<.5f}'     + '\n' )
+    d.write( f'{"  Recall ":=<30}> {recall:<.5f}'           + '\n' )
+    d.write( f'{"  F1_Score ":=<30}> {f1_score:<.5f}'       + '\n' )
   return None
 
 #CSV
@@ -272,6 +269,7 @@ def _print_csv( data, dest ):
   return None
 
 #PLOT
+#obsolete?  good for PvR, not ROC
 def _simplify_data( xs, ys ):
   """ Internal Function
       _simplify_data( xs:list, ys:list) :list, list
@@ -285,7 +283,7 @@ def _simplify_data( xs, ys ):
   nys  = [ys[-1]]
   curr = ys[-1]
   for i in range(len(ys))[::-1]:
-    if ys[i] < curr:
+    if ys[i] > curr:
       curr = ys[i]
       #add a point level to the old one
       nxs += [xs[i]]
@@ -304,9 +302,9 @@ def _simplify_data( xs, ys ):
   return nxs, nys
 
 #PLOT
-def _plot_pvr( data, dest=None ):
+def _plot_ROC( data, dest=None ):
   """ Internal Function
-      plot_pvr( data: , dest:pathlib.PurePath ) :None
+      plot_pvr( data: , dest:pathlib.PurePath ) :float
       Plots the Precision-Recall curve from the data
       and saves the graph to dest.
   """
@@ -318,7 +316,7 @@ def _plot_pvr( data, dest=None ):
     xs += [1 - i[11]]
     ys += [    i[10]]
     #n += [(i[9],i[10])]
-  xs, ys = _simplify_data(xs, ys)
+  #xs, ys = _simplify_data(xs, ys)
   plt.plot(xs,ys,color='red')
   #plt.plot(n,'rx')
   plt.ylabel('Sensitivity (AKA Recall)')
@@ -329,7 +327,11 @@ def _plot_pvr( data, dest=None ):
     plt.savefig(dest)
   else:
     plt.show()
-  return None
+
+  a  = 0
+  for i in range(len(xs)):
+    a += (ys[i]) * (xs[i]-xs[i-1])
+  return a
 
 #output
 def get_results( img_names, args ):
@@ -339,8 +341,8 @@ def get_results( img_names, args ):
       results directory (args.output / args.results)
   """ 
   hum_path   = args.results / 'results.txt'
-  csv_path   = args.results / 'PvR_table.csv'
-  graph_path = args.results / 'PvR_graph.svg'
+  csv_path   = args.results / 'anno_table.csv'
+  graph_path = args.results / 'ROC_graph.svg'
 
   #Do 'all' first
   roc_path   = args.output / 'all' / 'output_roc.txt'
@@ -364,18 +366,25 @@ def get_results( img_names, args ):
 
   negs = utils.get_negatives(args.truth, (args.output / 'all' / 'output_score_tracks.txt'))
   c_data = _combine_result_csv( c_data, negs )
-  header = ['Image Name','Annotation Name','Confidence Score',
-            'True','False',
+  header = ['Image Name','Annotation Name','Confidence Score','True','False',
             '# True Positives','# False Positives','# Inv FP','# False Negatives',
-            'Precision','Recall',
-            'Specificity']
-  types = ['str','str','float','bool','bool','int','int','int','int','float','float','float']
+            'Precision','Recall','Specificity']
+  types  = ['str','str','float','bool','bool',
+            'int','int','int','int',
+            'float','float','float']
   pretty_data = [header] + [types] + c_data
-  #for i in data:
-  #  print(i)
 
-  _print_csv( pretty_data,   csv_path )
-  _plot_pvr (      c_data, graph_path )
+  _print_csv( pretty_data, csv_path )
+  AUROC = _plot_ROC ( c_data, graph_path )
+  
+
+  last = c_data[-1]
+  with open(hum_path, 'a') as d:
+    d.write( '\n' + '-'*40 + '\n' )
+    d.write( 'Overall Evaluation Metrics:'                  + '\n' )
+    d.write( f'{"  Area Under ROC ":=<30}> {AUROC:<.5f}'    + '\n' )
+    d.write( '\n' + '-'*40 + '\n' )
+
 
   return None
 
