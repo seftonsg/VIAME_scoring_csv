@@ -379,10 +379,12 @@ def get_results( img_names, args ):
   
 
   last = c_data[-1]
+  gini_c = (2 * AUROC)-1
   with open(hum_path, 'a') as d:
     d.write( '\n' + '-'*40 + '\n' )
     d.write( 'Overall Evaluation Metrics:'                  + '\n' )
     d.write( f'{"  Area Under ROC ":=<30}> {AUROC:<.5f}'    + '\n' )
+    d.write( f'{"  Gini Coefficient ":=<30}> {gini_c:<.5f}' + '\n' )
     d.write( '\n' + '-'*40 + '\n' )
 
 
