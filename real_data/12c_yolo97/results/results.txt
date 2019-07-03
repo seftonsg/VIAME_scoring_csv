@@ -1,0 +1,115 @@
+
+----------------------------------------
+Data for all:
+  # Computed Detections ======> 1134      
+  # True Detections ==========> 1223      
+
+  # True  Positives (TP) =====> 1024      
+  # False Positives (FP) =====> 110       
+  # True  Negatives (TN) =====> NA
+  # False Negatives (FN) =====> 199       
+
+  P {True Positive} ==========> 0.79885
+  P {False Positive} =========> 0.09700
+
+  Sensitivity ================> 0.83729
+  Precision ==================> 0.90300
+  Recall =====================> 0.83729
+  F1_Score ===================> 0.86890
+
+----------------------------------------
+Data for 18ZC4773:
+  # Computed Detections ======> 94        
+  # True Detections ==========> 101       
+
+  # True  Positives (TP) =====> 79        
+  # False Positives (FP) =====> 15        
+  # True  Negatives (TN) =====> NA
+  # False Negatives (FN) =====> 22        
+
+  P {True Positive} ==========> 0.89109
+  P {False Positive} =========> 0.15957
+
+  Sensitivity ================> 0.78218
+  Precision ==================> 0.84043
+  Recall =====================> 0.78218
+  F1_Score ===================> 0.81026
+
+----------------------------------------
+Data for 18ZC4890:
+  # Computed Detections ======> 117       
+  # True Detections ==========> 103       
+
+  # True  Positives (TP) =====> 115       
+  # False Positives (FP) =====> 2         
+  # True  Negatives (TN) =====> NA
+  # False Negatives (FN) =====> -12       
+
+  P {True Positive} ==========> 0.94175
+  P {False Positive} =========> 0.01709
+
+  Sensitivity ================> 1.11650
+  Precision ==================> 0.98291
+  Recall =====================> 1.11650
+  F1_Score ===================> 1.04545
+
+----------------------------------------
+Data for 18ZC5063:
+  # Computed Detections ======> 187       
+  # True Detections ==========> 177       
+
+  # True  Positives (TP) =====> 158       
+  # False Positives (FP) =====> 29        
+  # True  Negatives (TN) =====> NA
+  # False Negatives (FN) =====> 19        
+
+  P {True Positive} ==========> 0.79661
+  P {False Positive} =========> 0.15508
+
+  Sensitivity ================> 0.89266
+  Precision ==================> 0.84492
+  Recall =====================> 0.89266
+  F1_Score ===================> 0.86813
+
+----------------------------------------
+Data for 18ZC5064:
+  # Computed Detections ======> 431       
+  # True Detections ==========> 508       
+
+  # True  Positives (TP) =====> 399       
+  # False Positives (FP) =====> 32        
+  # True  Negatives (TN) =====> NA
+  # False Negatives (FN) =====> 109       
+
+  P {True Positive} ==========> 0.75000
+  P {False Positive} =========> 0.07425
+
+  Sensitivity ================> 0.78543
+  Precision ==================> 0.92575
+  Recall =====================> 0.78543
+  F1_Score ===================> 0.84984
+
+----------------------------------------
+Data for 18ZC5757:
+  # Computed Detections ======> 305       
+  # True Detections ==========> 334       
+
+  # True  Positives (TP) =====> 273       
+  # False Positives (FP) =====> 32        
+  # True  Negatives (TN) =====> NA
+  # False Negatives (FN) =====> 61        
+
+  P {True Positive} ==========> 0.80239
+  P {False Positive} =========> 0.10492
+
+  Sensitivity ================> 0.81737
+  Precision ==================> 0.89508
+  Recall =====================> 0.81737
+  F1_Score ===================> 0.85446
+
+----------------------------------------
+Overall Evaluation Metrics:
+  Area Under ROC =============> 0.57692
+  Gini Coefficient ===========> 0.15384
+
+----------------------------------------
