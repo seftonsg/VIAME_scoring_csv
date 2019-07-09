@@ -21,3 +21,7 @@ python.exe expander.py
 -images image_frames_ML4 
 -script score_joint.bat 
 -output 1crnn
+
+
+MEAN AUROC by image
+MEAN AUROC by category, percat (need to fiddle with Matt's by-cat scoring script)

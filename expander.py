@@ -199,9 +199,9 @@ if __name__ == "__main__":
   #if not args.script:
   #  print( 'Error: a running script must be specified' )
   #  sys.exit( 0 )
-  if args.script and not os.path.exists(args.script): #can I raise an exception here?
-    print( 'Error: specified script scoring file does not exist' )
-    sys.exit( 0 )
+  #if args.script and not os.path.exists(args.script): #can I raise an exception here?
+  #  print( 'Error: specified script scoring file does not exist' )
+  #  sys.exit( 0 )
 
   if os.path.exists(args.output):
     print( 'Warning: Directory already exists and will be overwritten: ', args.output )
@@ -212,7 +212,7 @@ if __name__ == "__main__":
   args.computed = utils.make_PurePath( args.computed )
   args.images   = utils.make_PurePath(   args.images ) 
   args.output   = utils.make_PurePath(   args.output )
-  args.script   = utils.make_PurePath(   args.script )
+  #args.script   = utils.make_PurePath(   args.script )
   args.results  = args.output / args.results
   #args.res_file = utils.make_PurePath( args.res_file )
   #args.res_csv  = utils.make_PurePath(  args.res_csv )
