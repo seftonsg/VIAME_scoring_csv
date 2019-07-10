@@ -22,7 +22,7 @@ def _area( box ):
 
 def _between( test, x1, x2 ):
   #WARNING: assumes x1<x2
-  return ((x1 < test) and (test < x2)) #or \
+  return ((x1 <= test) and (test <= x2)) #or \
        #(test > x1 and test < x2)
 
 def _in_rect( point, rect ):
@@ -125,11 +125,11 @@ def _calc_iou( rect_a, rect_b ):
 def _make_table( rects_t, rects_c ):
   table = scipy.sparse.lil_matrix( (len(rects_t), len(rects_c)) )
   print(len(rects_t), ':', len(rects_c))
-  for t_idx in range(len(rects_t)-1):
-    for c_idx in range(len(rects_c)-1):
-      iou = _calc_iou( rects_t[t_idx], rects_c[c_idx] )
+  for t_idx in range(len(rects_t)):
+    for c_idx in range(len(rects_c)):
+      iou = _calc_iou( rects_t[t_idx-1], rects_c[c_idx-1] )
       if iou and iou > ERROR_MARGIN:
-        table[ t_idx, c_idx ] = iou
+        table[ t_idx-1, c_idx-1 ] = iou
   return table
 
 def _pair_majority( ious, t_tys, c_tys, confs, out, by_class=None ):
@@ -141,8 +141,8 @@ def _pair_majority( ious, t_tys, c_tys, confs, out, by_class=None ):
   meta_ious = []
   nz_coords = []
   nz_arr = ious.nonzero()
-  for idx in range(len(nz_arr[0])-1):
-    nz_coords.append((nz_arr[0][idx], nz_arr[1][idx]))
+  for idx in range(len(nz_arr[0])):
+    nz_coords.append((nz_arr[0][idx-1], nz_arr[1][idx-1]))
 
   #Fill data
   for t_idx, c_idx in nz_coords:

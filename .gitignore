@@ -19,6 +19,8 @@ real_data/*/*/output_roc.txt
 real_data/*/*/output_score_tracks.txt
 PvR*.csv
 new*
+.tmp*
+testdata*
 
 #Python Misc
 __pycache__
