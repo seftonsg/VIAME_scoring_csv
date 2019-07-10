@@ -70,12 +70,4 @@ def make_PurePath( loc ):
   else:
     return pathlib.PurePath(loc)
 
-#CONVERT
-def make_single_lined( track_file, new_file, ignore_class=None ):
-  """ Util Function
-      make_single_lined( track_file  :pathlib.PurePath 
-                         new_file    :pathlib.PurePath ):None
-      Creates a new file where all detections are placed
-      on unique lines, re-enumerated, 
-  """
 
