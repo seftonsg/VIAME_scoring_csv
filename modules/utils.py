@@ -13,7 +13,7 @@ import re
 
 #GET
 #TODO: rename, this name doesn't make sense
-def get_negatives( truths, scorefile):
+def get_negatives( truths, scorefile ):
   """ Util Function
       _get_negatives( truths   :pathlib.PurePath
                       scorefile:pathlib.PurePath 
@@ -43,7 +43,6 @@ def get_num_lines( file ):
 
   return i
 
-
 #CONVERT
 def ltos_csv( l ):
   """ Util Function
@@ -70,3 +69,13 @@ def make_PurePath( loc ):
     return pathlib.PurePath( os.getcwd(), loc )
   else:
     return pathlib.PurePath(loc)
+
+#CONVERT
+def make_single_lined( track_file, new_file, ignore_class=None ):
+  """ Util Function
+      make_single_lined( track_file  :pathlib.PurePath 
+                         new_file    :pathlib.PurePath ):None
+      Creates a new file where all detections are placed
+      on unique lines, re-enumerated, 
+  """
+

@@ -18,6 +18,7 @@ import pathlib
 import modules.utils      as utils
 import modules.output_gen as output_gen
 import modules.exec_score as exec_score
+import modules.iou_calc   as iou_calc
 
 #init
 def get_imgs( directory ):
@@ -234,7 +235,9 @@ if __name__ == "__main__":
   #exec_score.run_scripts(  img_names, args )
 
   #make the results
-  output_gen.get_results( img_names, args )
+  #output_gen.get_results( img_names, args )
+
+  iou_calc.get_table( args.truth, args.computed )
 
   print( 'Done\n' )
   #create a new computed file for each image
