@@ -1,0 +1,65 @@
+
+----------------------------------------
+Data for all:
+  # Computed Detections ======> 699       
+  # True Detections ==========> 889       
+
+  # True  Positives (TP) =====>  626      
+  # False Positives (FP) =====>  73       
+  # True  Negatives (TN) =====>  0        
+  # False Negatives (FN) =====>  0        
+
+  P {True Positive} ==========> 0.82115   
+  P {False Positive} =========> 0.10444   
+
+----------------------------------------
+Data for 18ZC4773:
+  # Computed Detections ======> 90        
+  # True Detections ==========> 101       
+
+  # True  Positives (TP) =====>  78       
+  # False Positives (FP) =====>  12       
+  # True  Negatives (TN) =====>  0        
+  # False Negatives (FN) =====>  0        
+
+  P {True Positive} ==========> 0.88119   
+  P {False Positive} =========> 0.13333   
+
+----------------------------------------
+Data for 18ZC4890:
+  # Computed Detections ======> 82        
+  # True Detections ==========> 103       
+
+  # True  Positives (TP) =====>  82       
+  # False Positives (FP) =====>  0        
+  # True  Negatives (TN) =====>  0        
+  # False Negatives (FN) =====>  0        
+
+  P {True Positive} ==========> 0.96117   
+  P {False Positive} =========> 0.00000   
+
+----------------------------------------
+Data for 18ZC5063:
+  # Computed Detections ======> 160       
+  # True Detections ==========> 177       
+
+  # True  Positives (TP) =====>  130      
+  # False Positives (FP) =====>  30       
+  # True  Negatives (TN) =====>  0        
+  # False Negatives (FN) =====>  0        
+
+  P {True Positive} ==========> 0.81921   
+  P {False Positive} =========> 0.18750   
+
+----------------------------------------
+Data for 18ZC5064:
+  # Computed Detections ======> 367       
+  # True Detections ==========> 508       
+
+  # True  Positives (TP) =====>  336      
+  # False Positives (FP) =====>  31       
+  # True  Negatives (TN) =====>  0        
+  # False Negatives (FN) =====>  0        
+
+  P {True Positive} ==========> 0.78150   
+  P {False Positive} =========> 0.08447   
