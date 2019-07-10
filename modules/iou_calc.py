@@ -54,7 +54,7 @@ def _calc_iou( rect_a, rect_b ):
   """
   box_i = [None] * 4
 
-  #Determine which corner is within rect_b, if any
+  #Determine which corners are within rect_b, if any
   k, s = _get_corners_inside(rect_a, rect_b)
   if s == 1:#point
     if   k == [1, 0, 0, 0]: #point - LL
@@ -76,12 +76,12 @@ def _calc_iou( rect_a, rect_b ):
   elif s == 2: #side
     if   k == [1, 1, 0, 0]: #side - LEFT
       box_i  = list(rect_a[ :2])
-      box_i += [ rect_b[  2], rect_b[3] ]
+      box_i += [ rect_b[  2], rect_a[3] ]
     elif k == [0, 1, 1, 0]: #side - TOP
       box_i  = [ rect_a[  0], rect_b[1] ] 
       box_i += list(rect_a[2: ])
     elif k == [0, 0, 1, 1]: #side - RIGHT
-      box_i  = [ rect_b[  0], rect_b[1] ]
+      box_i  = [ rect_b[  0], rect_a[1] ]
       box_i += list(rect_a[2: ])
     elif k == [1, 0, 0, 1]: #side - BOTTOM
       box_i  = list(rect_a[ :2])
@@ -132,7 +132,7 @@ def _make_table( rects_t, rects_c ):
         table[ t_idx, c_idx ] = iou
   return table
 
-def _pair_majority( ious, t_tys, c_tys, confs, by_class=None ):
+def _pair_majority( ious, t_tys, c_tys, confs, working_dir, by_class=None ):
   #new name: find matches? uniliniar pairs? 1:1??
   #instead of this... reverse-sort the elements of the array by IOU
   #bin into proper tru/com links 
@@ -170,7 +170,7 @@ def _pair_majority( ious, t_tys, c_tys, confs, by_class=None ):
         used_c_idx.append(meta_iou[1])
 
 
-  with open('test.txt', 'w') as o:
+  with open(working_dir/'test.txt', 'w') as o:
     for i in pruned:
       o.write((utils.ltos_csv(i) + '\n'))
 
@@ -185,7 +185,7 @@ def _pair_majority( ious, t_tys, c_tys, confs, by_class=None ):
     print("none")
   return None
 
-def get_table( truth_file, comp_file ):
+def get_table( truth_file, comp_file, working_dir ):
   #t_data = ([None], '')
   #c_data = ([None], '', 0.0)
   t_tys  = []
@@ -208,7 +208,7 @@ def get_table( truth_file, comp_file ):
       c_rect += [ coords       ]
 
   table = _make_table( t_rect , c_rect )
-  _pair_majority(table, t_tys, c_tys, c_conf, False)
+  _pair_majority(table, t_tys, c_tys, c_conf, working_dir, False )
 
 
   #datatype:

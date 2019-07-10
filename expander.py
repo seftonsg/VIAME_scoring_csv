@@ -219,6 +219,13 @@ if __name__ == "__main__":
   #args.res_file = utils.make_PurePath( args.res_file )
   #args.res_csv  = utils.make_PurePath(  args.res_csv )
 
+  #tmp_dir = args.output / '.tmp'
+  tmp_dir = utils.make_PurePath('.tmp')
+  print(tmp_dir)
+  if not os.path.exists(tmp_dir):
+    os.mkdir(tmp_dir)
+    #change my modules to classes when possible so I can pass these things easier
+
   #get the names of the images
   img_names = get_imgs( args.images )
 
@@ -238,10 +245,10 @@ if __name__ == "__main__":
   #make the results
   #output_gen.get_results( img_names, args )
 
-  preproc.order_coordinates(    args.truth, 'tmpt.csv' )
-  preproc.order_coordinates( args.computed, 'tmpc.csv')
+  preproc.order_coordinates(    args.truth, tmp_dir/'tmpt.csv' )
+  preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv')
 
-  iou_calc.get_table( 'tmpt.csv', 'tmpc.csv' )
+  iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir )
 
   print( 'Done\n' )
   #create a new computed file for each image
