@@ -132,7 +132,7 @@ def _make_table( rects_t, rects_c ):
         table[ t_idx, c_idx ] = iou
   return table
 
-def _pair_majority( ious, t_tys, c_tys, confs, working_dir, by_class=None ):
+def _pair_majority( ious, t_tys, c_tys, confs, out, by_class=None ):
   #new name: find matches? uniliniar pairs? 1:1??
   #instead of this... reverse-sort the elements of the array by IOU
   #bin into proper tru/com links 
@@ -170,7 +170,7 @@ def _pair_majority( ious, t_tys, c_tys, confs, working_dir, by_class=None ):
         used_c_idx.append(meta_iou[1])
 
 
-  with open(working_dir/'test.txt', 'w') as o:
+  with open(out, 'w') as o:
     for i in pruned:
       o.write((utils.ltos_csv(i) + '\n'))
 
@@ -185,7 +185,7 @@ def _pair_majority( ious, t_tys, c_tys, confs, working_dir, by_class=None ):
     print("none")
   return None
 
-def get_table( truth_file, comp_file, working_dir ):
+def get_table( truth_file, comp_file, out ):
   #t_data = ([None], '')
   #c_data = ([None], '', 0.0)
   t_tys  = []
@@ -208,7 +208,7 @@ def get_table( truth_file, comp_file, working_dir ):
       c_rect += [ coords       ]
 
   table = _make_table( t_rect , c_rect )
-  _pair_majority(table, t_tys, c_tys, c_conf, working_dir, False )
+  _pair_majority(table, t_tys, c_tys, c_conf, out, False )
 
 
   #datatype:

@@ -242,13 +242,19 @@ if __name__ == "__main__":
   #make the scripts
   #exec_score.run_scripts(  img_names, args )
 
-  #make the results
+  #exec_score.run_scripts( img_names, args)
+  
   #output_gen.get_results( img_names, args )
-
+  
   preproc.order_coordinates(    args.truth, tmp_dir/'tmpt.csv' )
   preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv')
 
-  iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir )
+  iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir/'IoU.csv' )
+
+
+  #make the results
+  #output_gen.get_results( img_names, args )
+
 
   print( 'Done\n' )
   #create a new computed file for each image
