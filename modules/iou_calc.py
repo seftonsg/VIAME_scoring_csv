@@ -5,10 +5,13 @@
 #  over another IoU, 
 #  Dynamic programming would possibly
 #  be fastest here.
-#  2019 06 26
+#  2019 07 09
 ########################################
 
+#scipy
 import scipy.sparse
+#custom
+import modules.utils as utils
 
 ERROR_MARGIN = 10 ** -10
 
@@ -129,73 +132,57 @@ def _make_table( rects_t, rects_c ):
         table[ t_idx, c_idx ] = iou
   return table
 
-def _pair_majority( ious, t_tys, c_tys, confs, by_type=None ):
+def _pair_majority( ious, t_tys, c_tys, confs, by_class=None ):
+  #new name: find matches? uniliniar pairs? 1:1??
   #instead of this... reverse-sort the elements of the array by IOU
   #bin into proper tru/com links 
 
+  #Get all nonzero values
+  meta_ious = []
+  nz_coords = []
+  nz_arr = ious.nonzero()
+  for idx in range(len(nz_arr[0])-1):
+    nz_coords.append((nz_arr[0][idx], nz_arr[1][idx]))
 
-  #defines the rules of favored iou
-  #iou should come first, then confidence
-  #pairs are defined as (t_ind, c_ind, t_ty, c_ty, IOU, conf)
-  pairs_by_comp = [None] * len(c_tys)
+  #Fill data
+  for t_idx, c_idx in nz_coords:
+    meta_ious.append(
+      [t_idx, c_idx,
+      t_tys[t_idx], c_tys[c_idx],
+      ious[t_idx,c_idx], confs[c_idx]])
+
+  #Multi-sort, starting with least significant
+  meta_ious.sort(key=lambda x: x[5]) #confidence
+  if by_class:
+    meta_ious.sort(key=lambda x: x[2]==x[3]) #same class (?)
+  meta_ious.sort(key=lambda x: x[4]) #iou
+
+  #Create a matrix of matches
+  pruned = [] #pairs are defined as (t_idx, c_idx, t_ty, c_ty, IOU, conf)
+  used_t_idx = []
+  used_c_idx = []
+  #go in reverse order as python's sort is low->high
+  for meta_iou in meta_ious[::-1]: 
+    if ((meta_iou[0] not in used_t_idx) and
+        (meta_iou[1] not in used_c_idx)):
+        pruned.append(meta_iou)
+        used_t_idx.append(meta_iou[0])
+        used_c_idx.append(meta_iou[1])
+
+
+  with open('test.txt', 'w') as o:
+    for i in pruned:
+      o.write((utils.ltos_csv(i) + '\n'))
+
+
+  
+  
   unmatched_truths = []
-  if by_type:
+  if by_class:
     print("Not ready yet")
     sys.exit(0)
   else:
-    for t_idx in range(len(t_tys)-1):
-      row = ious.getrow(t_idx)
-
-      #Are there matches?
-      if len(row.nonzero()[0]) == 0:
-        continue
-
-      #Prioritize IOU
-      #iff similar IOUs: prioritize conf
-      best = (t_idx, 0, t_tys[t_idx], '', 0, 0)
-      for c_idx in row.nonzero()[1]:
-        #check IOU
-        iou = ious[t_idx, c_idx]
-        #print(t_idx, c_idx, iou)
-        if (best[4] - iou) <= ERROR_MARGIN: #is the best less than the new?
-          #check for near-same
-          if abs(best[4] - iou) < ERROR_MARGIN: #near-same
-            if best[5] < confs[c_idx]: #choose the one with best conf
-              best = ( t_idx, c_idx, 
-                       t_tys[t_idx], c_tys[c_idx],
-                       iou, confs[c_idx] )
-          else: #not near same
-            best = ( t_idx, c_idx, 
-                     t_tys[t_idx], c_tys[c_idx],
-                     iou, confs[c_idx] )
-      #Resolve computed duplicate conflicts
-      idx = best[1]
-      alt = pairs_by_comp[idx]
-      if not alt:
-        pairs_by_comp[idx] = best
-      else:
-        #prioritize higher IOU
-        if (best[4] - alt[4]) <= ERROR_MARGIN: #is best not as good as the alt?
-          if abs(best[4] - alt[4]) < ERROR_MARGIN: #do they have the same iou?
-            if best[5] > alt[5]: #is the best better than the existing match?
-              pairs_by_comp[idx] = best
-            #otherwise, best is not as good as alt, kill it
-          else:
-            pairs_by_comp[idx] = best
-
-
-
-
-    nonzero_pairs = []
-    for i in pairs_by_comp:
-      if i:
-        nonzero_pairs += [i]
-    #nonzero_pairs.sort()
-    for i in nonzero_pairs:
-      print(i)
-    print("Num pairs: ", len(nonzero_pairs))
-      
-
+    print("none")
   return None
 
 def get_table( truth_file, comp_file ):

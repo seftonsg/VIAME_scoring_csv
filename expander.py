@@ -19,6 +19,7 @@ import modules.utils      as utils
 import modules.output_gen as output_gen
 import modules.exec_score as exec_score
 import modules.iou_calc   as iou_calc
+import modules.preproc    as preproc
 
 #init
 def get_imgs( directory ):
@@ -237,7 +238,10 @@ if __name__ == "__main__":
   #make the results
   #output_gen.get_results( img_names, args )
 
-  iou_calc.get_table( args.truth, args.computed )
+  preproc.order_coordinates(    args.truth, 'tmpt.csv' )
+  preproc.order_coordinates( args.computed, 'tmpc.csv')
+
+  iou_calc.get_table( 'tmpt.csv', 'tmpc.csv' )
 
   print( 'Done\n' )
   #create a new computed file for each image

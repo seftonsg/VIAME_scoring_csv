@@ -13,7 +13,7 @@
 #  x1,y1,x2,y2
 ################################
 
-
+import modules.utils as utils
 
 #CONVERT
 def expand_by_detection( track_file, new_file ):
@@ -32,5 +32,21 @@ def consolidate_classes( track_file, labels_file, new_file ):
     print('Same file')
   return None
 
-def order_coordinates( track_file, labels_file, new_file ):
+def order_coordinates( track_file, new_file ):
+  with open( track_file ) as t:
+    with open( new_file, 'w') as n:
+      for l in t: #this seems commonly written, make a util?  Format atoms as proper types?
+        l = l.strip().split(',')
+        ax = float(l[3])
+        ay = float(l[4])
+        bx = float(l[5])
+        by = float(l[6])
+        if (ax > bx): #not in order
+          l[3] = bx
+          l[5] = ax
+        if (ay > by):
+          l[4] = by
+          l[6] = ay
+        n.write( ( utils.ltos_csv(l) + '\n' ) )
+
   return None
