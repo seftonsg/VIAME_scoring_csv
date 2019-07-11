@@ -1,0 +1,2 @@
+roc threshold = 1.000000e+00 ; pd = 8.000000e-01 ; fa = 2     ; nMatches = 8     ; tp = 8     ; fp = 2     ; tn = 0     ; fn = 0     ; matched = 8     ; relevant = 10    ; nTrueTracks = 10    ; fa-norm = 2.000000e+00
+roc threshold = 1.001000e+00 ; pd = 0.000000e+00 ; fa = 0     ; nMatches = 0     ; tp = 0     ; fp = 0     ; tn = 2     ; fn = 8     ; matched = 8     ; relevant = 0     ; nTrueTracks = 10    ; fa-norm = 0.000000e+00
