@@ -18,8 +18,9 @@ import pathlib
 import modules.utils      as utils
 import modules.output_gen as output_gen
 import modules.exec_score as exec_score
-import modules.iou_calc   as iou_calc
+#import modules.iou_calc   as iou_calc
 import modules.preproc    as preproc
+import modules.iou_table  as iou_table
 
 #init
 def get_imgs( directory ):
@@ -249,7 +250,10 @@ if __name__ == "__main__":
   preproc.order_coordinates(    args.truth, tmp_dir/'tmpt.csv' )
   preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv')
 
-  iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir/'IoU.csv' )
+  table = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
+  table.run()
+
+  #iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir/'IoU.csv' )
 
 
   #make the results
