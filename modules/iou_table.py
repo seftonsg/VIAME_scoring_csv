@@ -147,7 +147,7 @@ class rect:
 
 class IoU_table:
   def __init__( self, ntrue=None, ncomp=None):
-    
+     
     #files
     self.comp_file = ncomp
     self.true_file = ntrue
@@ -156,6 +156,8 @@ class IoU_table:
     self.comp_rects = [] #[(rect(), conf)]
     self.true_rects = [] #[rect()]
     self.table = []
+    self.num_comp = 0
+    self.num_true = 0
 
   def _get_rects( self ):
     with open(self.true_file) as t:
@@ -175,6 +177,8 @@ class IoU_table:
         tmp.ty  =   str(i[9])
         c_conf  =   float(i[10])
         self.comp_rects += [ (tmp, c_conf) ]
+    self.num_comp = len(comp_rects)
+    self.num_true = len(true_rects)
 
   def _make_table( self ):
     self._get_rects()
@@ -188,13 +192,25 @@ class IoU_table:
           self.table[ t_idx-1, c_idx-1 ] = iou
     return None
 
+  #set variables (this might not be necessary in python, it's possible I can do this directly)
   def set_comp( self, ncomp ):
     self.comp_file = ncomp
   def set_true( self, ntrue ):
     self.true_file = ntrue
 
+  def get_comp_ty( self, idx ):
+    return self.comp_rects[idx][0].ty
+  def get_true_ty( self, idx ):
+    return self.true_rects[idx].ty
+  def get_iou( self, t_idx, c_idx ):
+    return self.table[t_idx, c_idx]
+  def get_conf(self, idx):
+    return self.comp_rects[idx][1]
+     
+
   def run( self ):
     self._make_table()
     print(self.table)
     return self.table
+
 
