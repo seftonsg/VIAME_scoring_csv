@@ -1,0 +1,42 @@
+INFO: Could not load default logger factory. Using built-in logger.
+2019-07-10 17:05:04.668 INFO score_tracks.cxx(496): GIT-HASH: output not supported yet
+2019-07-10 17:05:04.670 INFO score_tracks.cxx(542): Command line:
+2019-07-10 17:05:04.670 INFO score_tracks.cxx(542): score_tracks.exe --hadwav --computed-format noaa-csv --truth-format noaa-csv --fn2ts --computed-tracks test_det.csv --truth-tracks test_tru.csv 
+2019-07-10 17:05:04.673 INFO score_tracks_loader.cxx(866): About to load file '1 of 1 (forced format noaa-csv) : test_tru.csv ...
+2019-07-10 17:05:04.674 INFO score_tracks_loader.cxx(884): read 10 tracks
+2019-07-10 17:05:04.674 INFO score_tracks_loader.cxx(866): About to load file '1 of 1 (forced format noaa-csv) : test_det.csv ...
+2019-07-10 17:05:04.675 INFO score_tracks_loader.cxx(884): read 10 tracks
+2019-07-10 17:05:04.676 INFO score_tracks_loader.cxx(225): frame-number-to-timestamp for test_tru.csv: promoted 10 of 10 frames
+2019-07-10 17:05:04.677 INFO score_tracks_loader.cxx(225): frame-number-to-timestamp for test_det.csv: promoted 10 of 10 frames
+2019-07-10 17:05:04.678 INFO score_tracks.cxx(437): Normalization: no AOI set; frame FAR normalization disabled
+2019-07-10 17:05:04.678 INFO score_tracks.cxx(443): Info: --norm-data-time not set; frame FAR normalization disabled
+2019-07-10 17:05:04.679 INFO score_phase1.cxx(956): Adding quickfilter boxes to 10 truth tracks...
+2019-07-10 17:05:04.680 INFO score_phase1.cxx(958): Adding quickfilter boxes to 10 computed tracks...
+2019-07-10 17:05:04.680 INFO score_phase1.cxx(964): phase 1: 0 of 10...
+2019-07-10 17:05:04.680 INFO score_phase1.cxx(964): phase 1: 9 of 10...
+2019-07-10 17:05:04.681 INFO score_tracks.cxx(620): p1: AOI kept 10 of 10 truth tracks; 10 of 10 computed tracks
+2019-07-10 17:05:04.681 INFO score_phase2_hadwav.cxx(464): n-gt-detections: 10
+2019-07-10 17:05:04.681 INFO score_phase2_hadwav.cxx(465): n-comp-detections: 10
+2019-07-10 17:05:04.682 INFO score_phase2_hadwav.cxx(466): n-gt-frames:  1
+2019-07-10 17:05:04.682 INFO score_phase2_hadwav.cxx(467): n-comp-frames: 2
+2019-07-10 17:05:04.682 INFO score_phase2_hadwav.cxx(468): n-comp-frames-unique-match: 1
+2019-07-10 17:05:04.683 INFO score_phase2_hadwav.cxx(469): n-comp-frames-no-match: 1
+2019-07-10 17:05:04.683 INFO score_phase2_hadwav.cxx(470): n-comp-frames-outside-aoi: 0
+2019-07-10 17:05:04.683 INFO score_tracks.cxx(678): p2...
+2019-07-10 17:05:04.683 INFO score_phase3_hadwav.cxx(122): CP (track) avg over 10
+2019-07-10 17:05:04.684 INFO score_phase3_hadwav.cxx(138): CP (target) avg over 10
+2019-07-10 17:05:04.684 INFO score_phase3_hadwav.cxx(159): t2t.c2t is 10
+2019-07-10 17:05:04.684 INFO score_phase3_hadwav.cxx(173): trackPD: 8 / 10
+2019-07-10 17:05:04.684 INFO score_phase3_hadwav.cxx(175): trackFA: 2
+HADWAV Scoring Results:
+  Detection-Pd: 0.8
+  Detection-FA: 2
+  Detection-PFA: 0.2
+  Frame-NFAR: not computed
+  Track-Pd: 0.8
+  Track-FA: 2
+  Computed-track-PFA: 0.2
+  Track-NFAR: not computed
+  Avg track (continuity, purity ): 1.375, 1
+  Avg target (continuity, purity ): 1.1, 0.8
+  Track-frame-precision: 0.5
