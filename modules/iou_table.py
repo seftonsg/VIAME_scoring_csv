@@ -177,19 +177,19 @@ class IoU_table:
         tmp.ty  =   str(i[9])
         c_conf  =   float(i[10])
         self.comp_rects += [ (tmp, c_conf) ]
-    self.num_comp = len(comp_rects)
-    self.num_true = len(true_rects)
+    self.num_comp = len(self.comp_rects)
+    self.num_true = len(self.true_rects)
 
   def _make_table( self ):
     self._get_rects()
-    print(self.true_rects)
+    #print(self.true_rects)
     self.table = scipy.sparse.lil_matrix( (len(self.true_rects), len(self.comp_rects)) )
-    print(len(self.true_rects), ':', len(self.comp_rects))
-    for t_idx in range(len(self.true_rects)):
-      for c_idx in range(len(self.comp_rects)):
-        iou = self.true_rects[t_idx-1]._calc_iou( self.comp_rects[c_idx-1][0] )
+    #print(len(self.true_rects), ':', len(self.comp_rects))
+    for t_idx in range( 0, len(self.true_rects) ):
+      for c_idx in range( 0, len(self.comp_rects) ):
+        iou = self.true_rects[t_idx]._calc_iou( self.comp_rects[c_idx][0] )
         if iou and iou > ERROR_MARGIN:
-          self.table[ t_idx-1, c_idx-1 ] = iou
+          self.table[ t_idx, c_idx ] = iou
     return None
 
   #set variables (this might not be necessary in python, it's possible I can do this directly)

@@ -21,6 +21,7 @@ import modules.exec_score as exec_score
 #import modules.iou_calc   as iou_calc
 import modules.preproc    as preproc
 import modules.iou_table  as iou_table
+import modules.pvr_table  as pvr_table
 
 #init
 def get_imgs( directory ):
@@ -248,10 +249,14 @@ if __name__ == "__main__":
   #output_gen.get_results( img_names, args )
   
   preproc.order_coordinates(    args.truth, tmp_dir/'tmpt.csv' )
-  preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv')
+  preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv' )
 
-  table = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
-  table.run()
+  ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
+  ious.run()
+
+  pvrs = pvr_table.PVRtable(ious)
+  print(pvrs.get_mAP())
+
 
   #iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir/'IoU.csv' )
 

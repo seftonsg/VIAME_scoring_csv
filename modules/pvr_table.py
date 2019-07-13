@@ -1,5 +1,5 @@
 import sys
-import pathlib.PurePath
+import pathlib
 #custom
 import modules.iou_table as iou_table
 
@@ -8,7 +8,7 @@ class miou_element:
     self.t_idx = true_idx
     self.c_idx = comp_idx
     self.t_ty  = true_ty
-    self.c_ty  = com_ty
+    self.c_ty  = comp_ty
     self.iou   = intersection_over_union
     self.conf  = confidence
 
@@ -23,12 +23,12 @@ class miou_element:
     return ret
 
 class pvr_element:
-  def __init__( self, img='', comp_idx=-1, match=-1, conf=0.0, bool_ ):
-    self.image = None
-    self.name = None
+  def __init__( self, img='', nm='', comp_idx=-1, match=-1 ):
+    self.image = img
+    self.name = nm
     self.c_idx = comp_idx
     self.t_match_idx = match
-    self.is_true = bool_
+    self.is_true = False
 
     self.conf  = None
     self.acctp = None
@@ -40,85 +40,131 @@ class pvr_element:
 
   def __str__( self ):
     ret  = ''
-    ret += str( self.image       ) + ','
-    ret += str( self.name        ) + ','
-    ret += str( self.c_idx       ) + ','
-    ret += str( self.t_match_idx ) + ','
-    ret += str( self.is_true     ) + ','
+    ret += "Image: "   + str( self.image       ) + ','
+    ret += "Name: "    + str( self.name        ) + ','
+    ret += "c_idx: "   + str( self.c_idx       ) + ','
+    ret += "t_match: " + str( self.t_match_idx ) + ','
+    ret += "Matched: " + str( self.is_true     ) + ','
 
-    ret += str( self.conf  ) + ','
-    ret += str( self.acctp ) + ','
-    ret += str( self.accfp ) + ','
-    ret += str( self.accfn ) + ','
+    ret += "Conf: " + str( self.conf  ) + ','
+    ret += "TPs: "  + str( self.acctp ) + ','
+    ret += "FPs: "  + str( self.accfp ) + ','
+    ret += "FNs: "  + str( self.accfn ) + ','
 
-    ret += str( self.prec ) + ','
-    ret += str( self.rec  )
+    ret += "Prec: " + str( self.prec ) + ','
+    ret += "Rec: "  + str( self.rec  )
     return ret
 
 
-class pvr_table:
+class PVRtable:
   
-  def __init__(self, iou):
-    self.iou_table = iou
+  def __init__( self, ious ):
+    self.iou_table = ious
     self.meta_ious = []
-    #Image, Name (computed), Confidence, T, F, ACCTP, ACCFP, ACCFN, Precision, Recall,
-    self.table = None
+    #------Image, Name (computed), Confidence, T, F, ACCTP, ACCFP, ACCFN, Precision, Recall,
+    self.table = []
 
-    self.missed_truths = [] 
-    self.true_comps = []
+    #self.missed_truths = [] 
+    #self.true_comps = []
 
 
   def _compute_true_positives( self, th, enforce_ty=None ):
+    self.table = []
     self.meta_ious.sort( key=lambda x: x.iou )
-    self.true_comps = []
-    self.missed_truths = list(range( 0, self.iou_table.num_true))
-    for m_iou in m_ious:
-      tmp = pvr_element( 'img_name, todo', meta_iou.c_idx, meta_iou.t_idx, meta_iou.conf )
-      iou = m_iou.iou:
-        if enforce_ty:
-          print('No.')
-          sys.exit(1)
+    true_comps = []
+    missed_truths = list(range( 0, self.iou_table.num_true))
+    num_fp = 0
+    for m_iou in self.meta_ious:
+      tmp = pvr_element( 'imgholder', 'nameholder', m_iou.c_idx, m_iou.t_idx )
+      iou = m_iou.iou
+      if enforce_ty:
+        print('No.')
+        sys.exit(1)
 
-        if iou <= th:
-          tmp.is_true = False
-        else:
-          tmp.is_true = True
+      if iou <= th:
+        #tmp.is_true = False #unecessary, assumed false at all times.
+        num_fp += 1
+      else:
+        tmp.is_true = True
+        true_comps.append(    m_iou.c_idx )
+        if m_iou.t_idx in missed_truths:
+          missed_truths.remove( m_iou.t_idx )
 
-        missed_truths.remove( meta_iou.t_idx )
-        true_comps.append(    meta_iou.c_idx )
-        self.table += tmp
+      tmp.conf  = m_iou.conf
+      tmp.acctp = len(true_comps)
+      tmp.accfn = len(missed_truths)
+      tmp.accfp = num_fp
 
-
+      self.table.append(tmp)
     return self.table
 
-  def _update_table( self, th ):
+  def _update_table_pvr( self, th ):
     #sort and update accumulative stuff, prec/rec, etc.
-    self._compute_true_positives( th, False )
     self.table.sort( key=lambda x: x.conf )
-    cur_acc_tp=0
-    cur_acc_fp=0
-    cur_acc_fn=self.iou_table.num_true
     for e in self.table:
-      e.
-
+      e.prec = e.acctp / (e.acctp + e.accfp)
+      e.rec  = e.acctp / (e.acctp + e.accfn)
 
 
     
-  def _make_sorted_iou_table( self ):
-      #get nonzero elements
-      nz_coords = []
-      nz_arr = self.iou_table.table.nonzero()
-      for idx in range(len(nz_arr[0])):
-        nz_coords.append((nz_arr[0][idx-1], nz_arr[1][idx-1]))
+  def _make_sorted_iou_table( self, th ):
+    #get nonzero elements
+    nz_coords = []
+    nz_arr = self.iou_table.table.nonzero()
+    for idx in range(len(nz_arr[0])):
+      nz_coords.append((nz_arr[0][idx-1], nz_arr[1][idx-1]))
 
-      #Fill data
-      for t_idx, c_idx in nz_coords:
-        self.meta_ious.append([
-          t_idx, c_idx,                        #0,1
-          self.iou_table.get_true_ty(t_idx),   #2
-          self.iou_table.get_comp_ty(c_idx),   #3
-          self.iou_table.get_iou(t_idx,c_idx), #4
-          self.iou_table.get_conf(c_idx)])     #5
+    #Fill data
+    for t_idx, c_idx in nz_coords:
+      tmp = miou_element(
+        t_idx, c_idx,                        #0,1
+        self.iou_table.get_true_ty(t_idx),   #2
+        self.iou_table.get_comp_ty(c_idx),   #3
+        self.iou_table.get_iou(t_idx,c_idx), #4
+        self.iou_table.get_conf(c_idx))      #5
+      self.meta_ious.append(tmp)
+
+    self._compute_true_positives( th, False )
+    #for i in self.table[::-1]:
+    #  print(i)
+    self._update_table_pvr( th )
+
+  def _get_best_precision( self, conf_i ):
+    best_p = 0.0
+    for e in self.table:
+      if e.conf < conf_i:
+        continue
+      else:
+        if best_p < e.prec:
+          best_p = e.prec
+    return best_p
+
+  def get_AP11( self, th ):
+    self._make_sorted_iou_table( th )
+    ap = 0.0
+    for i in range(0,11):
+      ap += self._get_best_precision( i/10.0 )
+    ap = ap / 11.0
+    return ap
+
+  def get_AP101( self, th ):
+    self._make_sorted_iou_table( th )
+    ap = 0.0
+    for i in range(0,101):
+      ap += self._get_best_precision( i/100.0 )
+    ap = ap / 101.0
+    return ap
+
+  def get_mAP( self ):
+    mAP = 0.0
+    for i in range(50, 100, 5):
+      mAP += self.get_AP11( i/100 )
+    mAP = mAP / 10
+    return mAP
+
+
+
+
 
 
 
