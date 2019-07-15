@@ -110,7 +110,7 @@ def _make_confidence_name_table( computed ):
   return table
 
 #CSV
-def _make_PvR_csv( score, roc, dest, dictionary=None, wipe=False ):
+def _make_PvR_csv( iou_table, threshhold, wipe=False ):
   """ Internal Function
       _make_result_csv( score:pathlib.PurePath
         roc :pathlib.PurePath
