@@ -17,7 +17,7 @@ import scipy.sparse
 import modules.utils as utils
 
 
-ERROR_MARGIN = 10 ** -100
+ERROR_MARGIN = 10 ** -10
 
 
 class rect:
