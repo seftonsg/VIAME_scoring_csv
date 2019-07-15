@@ -61,7 +61,7 @@ def _print_human_results( score, dst, wipe=False ):
   sensitivity = n_TP / (n_TP + n_FN) #A/(A+C)
   precision   = n_TP / (n_TP + n_FP) #A/(A+B)
   recall      = sensitivity
-  f1_score    = (2 * precision * recall) / (precision + recall) #higher is better=
+  f1_score    = (2 * precision * recall) / (precision + recall) #higher is better
   AUROC       = "TODO: haha I'm not there yet"
 
   # Print data to file
@@ -127,9 +127,7 @@ def _make_PvR_csv( score, roc, dest, dictionary=None, wipe=False ):
   if wipe and os.path.exists( dest ):
     os.remove( dest )
 
-  table = []
-  #Image, Name, Confidence, T, F, ACCTP, ACCFP, ACCTN, ACCFN, Precision, Recall,
-  #Specificity,
+  #Image, Name (computed), Confidence, T, F, ACCTP, ACCFP, ACCFN, Precision, Recall,
 
   with open(roc) as r:
     previous = [None] * 12
