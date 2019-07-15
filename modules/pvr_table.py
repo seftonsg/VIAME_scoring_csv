@@ -55,6 +55,22 @@ class pvr_element:
     ret += "Rec: "  + str( self.rec  )
     return ret
 
+  def __repr__( self ):
+    ret  = ''
+    ret += str( self.image       ) + ', '
+    ret += str( self.name        ) + ', '
+    ret += str( self.c_idx       ) + ', '
+    ret += str( self.t_match_idx ) + ', '
+    ret += str( self.is_true     ) + ', '
+
+    ret += str( self.conf  ) + ', '
+    ret += str( self.acctp ) + ', '
+    ret += str( self.accfp ) + ', '
+    ret += str( self.accfn ) + ', '
+
+    ret += str( self.prec ) + ', '
+    ret += str( self.rec  )
+    return ret
 
 class PVRtable:
   
@@ -67,13 +83,14 @@ class PVRtable:
     #self.missed_truths = [] 
     #self.true_comps = []
 
-
+  #PRIVATE
   def _compute_true_positives( self, th, enforce_ty=None ):
-    self.table = []
+    table = []
     self.meta_ious.sort( key=lambda x: x.iou )
     true_comps = []
     missed_truths = list(range( 0, self.iou_table.num_true))
     num_fp = 0
+    print('Len meta_ious: ', str(len(self.meta_ious)))
     for m_iou in self.meta_ious:
       tmp = pvr_element( 'imgholder', 'nameholder', m_iou.c_idx, m_iou.t_idx )
       iou = m_iou.iou
@@ -95,8 +112,8 @@ class PVRtable:
       tmp.accfn = len(missed_truths)
       tmp.accfp = num_fp
 
-      self.table.append(tmp)
-    return self.table
+      table.append(tmp)
+    return table
 
   def _update_table_pvr( self, th ):
     #sort and update accumulative stuff, prec/rec, etc.
@@ -105,16 +122,14 @@ class PVRtable:
       e.prec = e.acctp / (e.acctp + e.accfp)
       e.rec  = e.acctp / (e.acctp + e.accfn)
 
-
-    
-  def _make_sorted_iou_table( self, th ):
+  def _make_meta_ious( self ): 
     #get nonzero elements
     nz_coords = []
+    meta_ious = []
     nz_arr = self.iou_table.table.nonzero()
     for idx in range(len(nz_arr[0])):
       nz_coords.append((nz_arr[0][idx-1], nz_arr[1][idx-1]))
 
-    #Fill data
     for t_idx, c_idx in nz_coords:
       tmp = miou_element(
         t_idx, c_idx,                        #0,1
@@ -122,9 +137,14 @@ class PVRtable:
         self.iou_table.get_comp_ty(c_idx),   #3
         self.iou_table.get_iou(t_idx,c_idx), #4
         self.iou_table.get_conf(c_idx))      #5
-      self.meta_ious.append(tmp)
+      meta_ious.append(tmp)
+    return(meta_ious)
 
-    self._compute_true_positives( th, False )
+    
+  def _make_sorted_iou_table( self, th ):
+    #Fill data
+    self.meta_ious = self._make_meta_ious()
+    self.table = self._compute_true_positives( th, False )
     #for i in self.table[::-1]:
     #  print(i)
     self._update_table_pvr( th )
@@ -139,11 +159,15 @@ class PVRtable:
           best_p = e.prec
     return best_p
 
+
+  #PUBLIC
   def get_AP11( self, th ):
     self._make_sorted_iou_table( th )
     ap = 0.0
     for i in range(0,11):
       ap += self._get_best_precision( i/10.0 )
+      #t = self._get_best_precision( i/10.0 )
+      #print('Rec: ', i/10.0, 'Prec:', t)
     ap = ap / 11.0
     return ap
 
@@ -161,6 +185,16 @@ class PVRtable:
       mAP += self.get_AP11( i/100 )
     mAP = mAP / 10
     return mAP
+
+  def get_num_above_th( self, th ):
+    n = 0
+    self._make_sorted_iou_table( th )
+    #print(self.table)
+    for i in self.table:
+      print( i.c_idx, i.t_match_idx, i.is_true )
+      if i.is_true:
+        n += 1
+    return n
 
 
 
