@@ -253,10 +253,20 @@ if __name__ == "__main__":
 
   ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
   ious.run()
+  ious.write_to_file(tmp_dir/'tmp.csv')
 
   pvrs = pvr_table.PVRtable(ious)
-  print(pvrs.get_mAP())
-
+  print( 'n>00:', pvrs.get_num_above_th(0.0))
+  print( 'AP00:', pvrs.get_AP11(0.0))
+  pvrs.make_graph()
+  print( 'n>25:', pvrs.get_num_above_th(0.25))
+  print( 'AP25:', pvrs.get_AP11(0.25))
+  pvrs.make_graph()
+  print( 'n>50:', pvrs.get_num_above_th(0.50))
+  print( 'AP50:', pvrs.get_AP11(0.50))
+  pvrs.make_graph()
+  print('\n')
+  print( 'mAP:' , pvrs.get_mAP())
 
   #iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir/'IoU.csv' )
 

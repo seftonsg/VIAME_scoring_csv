@@ -17,7 +17,7 @@ import scipy.sparse
 import modules.utils as utils
 
 
-ERROR_MARGIN = 10 ** -10
+ERROR_MARGIN = 10 ** -100
 
 
 class rect:
@@ -115,7 +115,7 @@ class rect:
     elif s == 4: #inside
       box_i = self
     elif s == 0: #outside
-      k2, s2 = self._get_corners_inside(other)
+      k2, s2 = other._get_corners_inside(self)
       if s2 == 2: #bump (side of b in a)
         if   k2 == [0, 0, 1, 1]: #along left side
           box_i.llp = [  self.llp[0], other.llp[1] ]
@@ -155,6 +155,7 @@ class IoU_table:
     #annotation data
     self.comp_rects = [] #[(rect(), conf)]
     self.true_rects = [] #[rect()]
+    self.comp_no_overlap = []
     self.table = []
     self.num_comp = 0
     self.num_true = 0
@@ -207,10 +208,15 @@ class IoU_table:
   def get_conf(self, idx):
     return self.comp_rects[idx][1]
      
+  def write_to_file( self, dst ):
+    with open(dst, 'w') as d:
+      #for i in self.table:
+      d.write(str(self.table))
+
 
   def run( self ):
     self._make_table()
-    print(self.table)
+    #print(self.table)
     return self.table
 
 
