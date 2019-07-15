@@ -50,3 +50,45 @@ def order_coordinates( track_file, new_file ):
         n.write( ( utils.ltos_csv(l) + '\n' ) )
 
   return None
+
+def make_fake_data( track_file, new_file ):
+  with open( track_file ) as t:
+    with open( new_file, 'w') as n:
+      for l in t: #this seems commonly written, make a util?  Format atoms as proper types?
+        l = l.strip().split(',')
+        ax = float(l[3]) +10
+        ay = float(l[4]) +10
+        bx = float(l[5]) +10
+        by = float(l[6]) +10
+        if (ax > bx): #not in order
+          l[3] = bx
+          l[5] = ax
+        if (ay > by):
+          l[4] = by
+          l[6] = ay
+        n.write( ( utils.ltos_csv(l) + '\n' ) )
+
+  return None
+
+def get_avg_dxdy( track_file ):
+  xs = 0
+  ys = 0
+  n = 0
+  with open( track_file ) as t:
+    for l in t:
+      l = l.strip().split(',')
+      xs += abs(float(l[5]) - float(l[3]))
+      ys += abs(float(l[6]) - float(l[4]))
+      n  += 1
+  return [(xs/n), (ys/n)]
+
+
+
+
+
+
+
+
+
+
+

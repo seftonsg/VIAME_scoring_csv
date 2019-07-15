@@ -224,6 +224,18 @@ class PVRtable:
 
 
   #PUBLIC
+  # def get_AP11( self, th ):
+  #   self._make_sorted_iou_table( th )
+  #   highest_r = 0
+  #   for i in self.table:
+  #     if i.rec > highest_r:
+  #       highest_r = i.rec
+  #   ap = 0.0
+  #   for i in range(0,11):
+  #     ap += self._get_best_precision( i/10.0 * highest_r )
+  #   ap = ap / 11.0
+  #   return ap
+
   def get_AP11( self, th ):
     self._make_sorted_iou_table( th )
     ap = 0.0
@@ -258,8 +270,12 @@ class PVRtable:
     return n
 
 
-
-
-
-
+  def get_f1( self, th ):
+    self._make_sorted_iou_table( th )
+    p = self.table[-1].prec
+    r = self.table[-1].rec
+    if (p+r) == 0:
+      return None
+    f = (2*p*r)/(p+r)
+    return f
 

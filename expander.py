@@ -231,7 +231,7 @@ if __name__ == "__main__":
   #get the names of the images
   img_names = get_imgs( args.images )
 
-  #create directory tree
+  #create directory tree 
   #make_dir_tree( img_names, args.output )
 
   #copy over vital files
@@ -250,7 +250,13 @@ if __name__ == "__main__":
   
   preproc.order_coordinates(    args.truth, tmp_dir/'tmpt.csv' )
   preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv' )
+  #preproc.make_fake_data( args.truth, tmp_dir/'fake.csv')
+  #print(preproc.get_avg_dxdy(args.truth))
 
+  #sys.exit(0)
+
+
+  #ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'fake.csv' )
   ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
   ious.run()
   ious.write_to_file(tmp_dir/'tmp.csv')
@@ -258,13 +264,19 @@ if __name__ == "__main__":
   pvrs = pvr_table.PVRtable(ious)
   print( 'n>00:', pvrs.get_num_above_th(0.0))
   print( 'AP00:', pvrs.get_AP11(0.0))
-  pvrs.make_graph()
+  #pvrs.make_graph()
   print( 'n>25:', pvrs.get_num_above_th(0.25))
   print( 'AP25:', pvrs.get_AP11(0.25))
-  pvrs.make_graph()
+  print( 'F1:'  , pvrs.get_f1(0.25))
+  #pvrs.make_graph()
   print( 'n>50:', pvrs.get_num_above_th(0.50))
   print( 'AP50:', pvrs.get_AP11(0.50))
-  pvrs.make_graph()
+  print( 'F1:'  , pvrs.get_f1(0.50))
+  #pvrs.make_graph()
+  print( 'n>95:', pvrs.get_num_above_th(0.950))
+  print( 'AP95:', pvrs.get_AP11(0.950))
+  print( 'F1:'  , pvrs.get_f1(0.95))
+  #pvrs.make_graph()
   print('\n')
   print( 'mAP:' , pvrs.get_mAP())
 
