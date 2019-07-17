@@ -17,7 +17,7 @@ import scipy.sparse
 import modules.utils as utils
 
 
-ERROR_MARGIN = 10 ** -100
+ERROR_MARGIN = 10 ** -10
 
 
 class rect:
@@ -29,6 +29,9 @@ class rect:
   #def __len__(self):
   #  return len()
 
+  def __str__( self ):
+    return self._debug_str()
+
   def _debug_str( self ):
     str_  = 'Lower  Left: ' + str(self.llp[0]) + ', ' + str(self.llp[1]) + '\t'
     str_ += 'Upper Right: ' + str(self.urp[0]) + ', ' + str(self.urp[1])
@@ -39,8 +42,6 @@ class rect:
       dx = self.urp[0] - self.llp[0]
       dy = self.urp[1] - self.llp[1]
       return abs(dx * dy)
-
-  
 
   def _in_rect( self, point, other ):
     """ Internal Function
@@ -93,7 +94,7 @@ class rect:
         box_i.urp = [ self.urp[0], other.urp[1]]
       else:
         print("Mathematically impossible.")
-        print("DEBUG: ", self._debug_str(), '\n', other._debug_str(), '\n', k, s)
+        print("DEBUG: ", print(self), '\n', print(other), '\n', k, s)
         sys.exit(1)
     elif s == 2: #side
       if   k == [1, 1, 0, 0]: #side - LEFT
@@ -110,7 +111,7 @@ class rect:
         box_i.urp = [  self.urp[0], other.urp[1] ]
       else:
         print("Mathematically impossible.")
-        print("DEBUG: ", self._debug_str(), '\n', other._debug_str(), '\n', k, s)
+        print("DEBUG: ", print(self), '\n', print(other), '\n', k, s)
         sys.exit(1)
     elif s == 4: #inside
       box_i = self
@@ -135,7 +136,7 @@ class rect:
         return None
     else:
       print("Mathematically impossible.")
-      print("DEBUG: ", self._debug_str(), '\n', other._debug_str(), '\n', k, s)
+      print("DEBUG: ", print(self), '\n', print(other), '\n', k, s)
       sys.exit(1) #failure
     #calculate areas
     area_a =  self._area()
