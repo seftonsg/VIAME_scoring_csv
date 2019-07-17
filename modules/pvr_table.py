@@ -23,6 +23,16 @@ class miou_element:
     ret += str( self.conf  )
     return ret
 
+  def __copy__( self ):
+    new = type(self)()
+    new.t_idx = self.t_idx.copy()
+    new.c_idx = self.c_idx.copy()
+    new.t_ty  = self.t_ty.copy()
+    new.c_ty  = self.c_ty.copy()
+    new.iou   = self.iou.copy()
+    new.conf  = self.conf.copy()
+    return new
+
 class pvr_element:
   def __init__( self, img='', nm='', comp_idx=-1, match=-1 ):
     self.image = img
@@ -77,7 +87,6 @@ class pvr_element:
     return ret
 
 class PVRtable:
-  
   def __init__( self, ious ):
     self.iou_table = ious
     self.meta_ious = []
@@ -222,8 +231,6 @@ class PVRtable:
     plt.show()
     return None
 
-
-  #PUBLIC
   def get_AP11_short( self, th ):
     self._make_sorted_iou_table( th )
     highest_r = 0
@@ -269,7 +276,6 @@ class PVRtable:
         n += 1
     return n
 
-
   def get_f1( self, th ):
     self._make_sorted_iou_table( th )
     p = self.table[-1].prec
@@ -278,4 +284,5 @@ class PVRtable:
       return None
     f = (2*p*r)/(p+r)
     return f
+
 

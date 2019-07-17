@@ -32,6 +32,13 @@ class rect:
   def __str__( self ):
     return self._debug_str()
 
+  def __copy__( self ):
+    new = type(self)()
+    new.llp = self.llp.copy()
+    new.urp = self.urp.copy()
+    new.ty  = self.ty.copy()
+    return new
+
   def _debug_str( self ):
     str_  = 'Lower  Left: ' + str(self.llp[0]) + ', ' + str(self.llp[1]) + '\t'
     str_ += 'Upper Right: ' + str(self.urp[0]) + ', ' + str(self.urp[1])
@@ -145,6 +152,8 @@ class rect:
     area_u = area_a + area_b - area_i
     return float(area_i / area_u)
 
+  def area( self ):
+    return _area(self)
 
 class IoU_table:
   def __init__( self, ntrue=None, ncomp=None):
@@ -160,6 +169,20 @@ class IoU_table:
     self.table = []
     self.num_comp = 0
     self.num_true = 0
+
+  def __copy__( self ):
+    new = type(self)()
+    new.comp_file = self.comp_file.copy()
+    new.true_file = self.true_file.copy()
+
+    #annotation data
+    new.comp_no_overlap = self.comp_no_overlap.copy()
+    new.comp_rect = self.comp_rects.copy()
+    new.true_rect = self.true_rects.copy()
+    new.table     = self.table.copy()
+    new.num_comp  = self.num_comp.copy()
+    new.num_true  = self.num_true.copy()
+    return new
 
   def _get_rects( self ):
     with open(self.true_file) as t:
@@ -213,7 +236,6 @@ class IoU_table:
     with open(dst, 'w') as d:
       #for i in self.table:
       d.write(str(self.table))
-
 
   def run( self ):
     self._make_table()
