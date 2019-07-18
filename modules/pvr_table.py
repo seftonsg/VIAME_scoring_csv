@@ -270,7 +270,7 @@ class PVRtable:
     return new_iou
 
   #PUBLIC
-  def make_graph( self ):
+  def make_graph( self, save_loc=None, title='' ):
     xs = []
     ys = []
     for i in self.table:
@@ -278,11 +278,18 @@ class PVRtable:
       ys.append( self._get_best_precision(i.rec))
       #ys.append( i.prec )
 
+    plt.clf()
     plt.plot( xs, ys, 'r' )
+    #plt.title()
     plt.ylabel( 'Precision' )
     plt.xlabel( 'Recall'    )
-    plt.axis([0.0,1.0,0.0,1.0])
-    plt.show()
+    plt.axis( [0.0,1.0,0.0,1.0] )
+
+    if save_loc:
+      plt.savefig( save_loc )
+    else:
+      plt.show()
+
     return None
 
   def get_AP11_short( self, th ):
@@ -354,7 +361,76 @@ class PVRtable:
     p = self.table[-1].prec
     r = self.table[-1].rec
     if (p+r) == 0:
-      return None
-    f = (2*p*r)/(p+r)
+      return -1.0
+    f = (2.0*p*r)/(p+r)
     return f
 
+
+def write_res( dst, pvrs ):
+  with open(dst, 'a') as d:
+    mAP  = pvrs.get_mAP (    )
+    AP50 = pvrs.get_AP11(0.50)
+    AP75 = pvrs.get_AP11(0.75)
+    APsm = pvrs.get_APsm(0.00)
+    APmd = pvrs.get_APmd(0.00)
+    APlg = pvrs.get_APlg(0.00)
+    f150 = pvrs.get_f1  (0.50)
+    f175 = pvrs.get_f1  (0.75)
+    d.write( f'{"  mAP ":=<30}> {mAP:<.5f}'    + '  ( COCO Primary        )\n' )
+    d.write( f'{"  AP50 ":=<30}> {AP50:<.5f}'  + '  ( Pascal VOC          )\n' )
+    d.write( f'{"  AP75 ":=<30}> {AP75:<.5f}'  + '  ( Strict              )\n' )
+    d.write( f'{"  APsm ":=<30}> {APsm:<.5f}'  + '  (         area < 32^2 )\n' )
+    d.write( f'{"  APmd ":=<30}> {APmd:<.5f}'  + '  ( 32^2 <= area < 92^2 )\n' )
+    d.write( f'{"  APlg ":=<30}> {APlg:<.5f}'  + '  ( 92^2 <= area        )\n' )
+    d.write( f'{"  F1-50 ":=<30}> {f150:<.5f}' + '  \n' )
+    d.write( f'{"  F1-75 ":=<30}> {f175:<.5f}' + '  \n' )
+    d.write( '\n' + '-'*40 + '\n' )
+    #print(len(pvrs.table))
+  return None
+
+def get_results( img_names, args ):
+  """ Function
+      get_results( img_names:list args:?ty ) :None
+      Produces the results and writes them to the
+      results directory (args.output / args.results)
+  """ 
+  hum_path   = args.results / 'results.txt'
+  graph_path = args.results / 'PvR_graph.svg'
+
+  #Do 'all' first
+
+  with open(hum_path, 'w') as d:
+    #clean the file
+    d.write('\n')
+    d.write( '\n' + '-'*40 + '\n' )
+
+  #Do by image
+  for i in img_names:
+    true_path   = args.output / i / ('truth_' + i + '.csv')
+    comp_path   = args.output / i / ('computed_' + i + '.csv')
+    ious = iou_table.IoU_table( true_path, comp_path )
+    ious.run()
+    pvrs = PVRtable(ious)
+
+    with open(hum_path, 'a') as d:
+      d.write( 'Metrics for ' + i + ':' + '\n')
+    write_res(hum_path, pvrs)
+
+    sub_graph_path = args.output / i / ('PvR_' + i + '.svg')
+    pvrs.get_AP11(0.50) #update pvrs to have proper data for graph
+    pvrs.make_graph(sub_graph_path)
+  
+  comp_path  = args.output / 'all' / ('computed_all.csv')
+  comp_path  = args.output / 'all' / ('truth_all.csv')
+  ious = iou_table.IoU_table( true_path, comp_path )
+  ious.run()
+  pvrs = PVRtable(ious)
+
+  with open(hum_path, 'a') as d:
+    d.write( 'Overall Evaluation Metrics:' + '\n' )
+  write_res(hum_path, pvrs)
+
+  pvrs.get_AP11(0.50) #update pvrs to have proper data for graph
+  pvrs.make_graph(graph_path)
+
+  return None

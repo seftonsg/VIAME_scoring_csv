@@ -105,12 +105,15 @@ def move_subtrack_files( img_names, out_dir ):
     tname = 'truth_'+i+'.csv'
     src = out_dir / tname
     dst = out_dir / i / tname
-    os.rename( src, dst )
+    preproc.order_coordinates(src, dst)
+    os.remove( src )
     #computed
     cname = 'computed_'+i+'.csv'
     src = out_dir / cname
     dst = out_dir / i / cname
-    os.rename( src, dst )
+    #os.rename( src, dst )
+    preproc.order_coordinates(src, dst)
+    os.remove( src )
 
   return None
 
@@ -223,49 +226,17 @@ if __name__ == "__main__":
   #Actually do the math and stuff:
   ################################
   #create directory tree 
-  #make_dir_tree( img_names, args.output )
+  make_dir_tree( img_names, args.output )
 
   #copy over vital files
-  #copy_vitals( args )
+  copy_vitals( args )
 
   #create a new truth file for each image
-  #create_subtrack_files( img_names, args.output, args.truth, args.computed )
-  #move_subtrack_files(   img_names, args.output )
+  create_subtrack_files( img_names, args.output, args.truth, args.computed )
+  move_subtrack_files(   img_names, args.output )
 
-  #make the scripts
-  #exec_score.run_scripts( img_names, args )
-  
-  #output_gen.get_results( img_names, args )
-  
-  preproc.order_coordinates(    args.truth, tmp_dir/'tmpt.csv' )
-  preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv' )
-  #preproc.make_fake_data( args.truth, tmp_dir/'fake.csv')
-  #print(preproc.get_avg_dxdy(args.truth))
-
-
-  #ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'fake.csv' )
-  ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
-  ious.run()
-  ious.write_to_file(tmp_dir/'tmp.csv')
-
-
-  #overall results, output_gen.py should implement by-image scoring
-  pvrs = pvr_table.PVRtable(ious)
-  # print( 'n>00:', pvrs.get_num_above_th(0.0))
-  # print( 'AP00:', pvrs.get_AP11_short(0.0))
-  # #pvrs.make_graph()
-  # print( 'n>25:', pvrs.get_num_above_th(0.25))
-  # print( 'AP25:', pvrs.get_AP11_short(0.25))
-  # print( 'F1:'  , pvrs.get_f1(0.25))
-  #pvrs.make_graph()
-  print('\n')
-  print( 'AP00:', pvrs.get_AP11(0.00))
-  print( 'AP50:', pvrs.get_AP11(0.50))
-  print( 'AP75:', pvrs.get_AP11(0.75))
-  print( 'mAP: ', pvrs.get_mAP(     ))
-  print( 'APsm:', pvrs.get_APsm(0.00))
-  print( 'APmd:', pvrs.get_APmd(0.00))
-  print( 'APlg:', pvrs.get_APlg(0.00))
+  #make and get results by the image
+  pvr_table.get_results( img_names, args )
 
   print( 'Done\n' )
   #create a new computed file for each image
