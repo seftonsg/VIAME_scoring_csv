@@ -16,7 +16,6 @@ import subprocess
 import pathlib 
 #Custom imports
 import modules.utils      as utils
-import modules.output_gen as output_gen
 import modules.preproc    as preproc
 import modules.iou_table  as iou_table
 import modules.pvr_table  as pvr_table
