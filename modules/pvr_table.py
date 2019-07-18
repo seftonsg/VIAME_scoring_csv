@@ -1,10 +1,12 @@
 import sys
 import pathlib
 import matplotlib.pyplot as plt
+import copy
 #custom
 import modules.iou_table as iou_table
 
 class miou_element:
+  #SPECIAL
   def __init__(self, true_idx=-1, comp_idx=-1, true_ty=None, comp_ty=None, intersection_over_union=0.0, confidence=0.0 ):
     self.t_idx = true_idx
     self.c_idx = comp_idx
@@ -12,16 +14,6 @@ class miou_element:
     self.c_ty  = comp_ty
     self.iou   = intersection_over_union
     self.conf  = confidence
-
-  def __str__( self ):
-    ret  = ''
-    ret += str( self.t_idx ) + ','
-    ret += str( self.c_idx ) + ','
-    ret += str( self.t_ty  ) + ','
-    ret += str( self.c_ty  ) + ','
-    ret += str( self.iou   ) + ','
-    ret += str( self.conf  )
-    return ret
 
   def __copy__( self ):
     new = type(self)()
@@ -33,7 +25,18 @@ class miou_element:
     new.conf  = self.conf.copy()
     return new
 
+  def __str__( self ):
+    ret  = ''
+    ret += str( self.t_idx ) + ','
+    ret += str( self.c_idx ) + ','
+    ret += str( self.t_ty  ) + ','
+    ret += str( self.c_ty  ) + ','
+    ret += str( self.iou   ) + ','
+    ret += str( self.conf  )
+    return ret
+
 class pvr_element:
+  #SPECIAL
   def __init__( self, img='', nm='', comp_idx=-1, match=-1 ):
     self.image = img
     self.name = nm
@@ -49,6 +52,23 @@ class pvr_element:
 
     self.prec = None
     self.rec  = None
+
+  def __copy__( self ):
+    new = type(self)()
+    new.image       = copy.copy( self.image )
+    new.name        = copy.copy( self.name )
+    new.c_idx       = copy.copy(  self.c_idx )
+    new.t_match_idx = copy.copy( self.t_match_idx )
+    new.is_true     = copy.copy( self.is_true     )
+
+    new.conf  = copy.copy( self.conf  )
+    new.iou   = copy.copy( self.iou   )
+    new.acctp = copy.copy( self.acctp )
+    new.accfp = copy.copy( self.accfp )
+    new.accfn = copy.copy( self.accfn )
+
+    new.prec = copy.copy( self.prec )
+    new.rec  = copy.copy( self.rec  )
 
   def __str__( self ):
     ret  = ''
@@ -87,6 +107,7 @@ class pvr_element:
     return ret
 
 class PVRtable:
+  #SPECIAL
   def __init__( self, ious ):
     self.iou_table = ious
     self.meta_ious = []
@@ -95,6 +116,16 @@ class PVRtable:
 
     #self.missed_truths = [] 
     #self.true_comps = []
+
+  def __copy__( self ):
+    new = type(self)(self.iou_table)
+    #new.iou_table = copy.copy(self.iou_table)
+    new.meta_ious = copy.copy(self.meta_ious)
+    new.table     = copy.copy(self.table)
+    #new.meta_ious = []
+    #new.table = []
+    #new._make_meta_ious()
+    return new
 
   #PRIVATE
   def _make_meta_ious( self ): 
@@ -215,6 +246,38 @@ class PVRtable:
           best_p = e.prec
     return best_p
 
+  def _get_COCOsmall( self ):
+    new_iou = copy.copy(self.iou_table)
+    new_iou.comp_rects = []
+    for e in self.iou_table.comp_rects:
+      if e[0].area() < 32:
+        new_iou.comp_rects.append(e)
+    new_iou.num_comp = len(new_iou.comp_rects)
+    new_iou.run_table()
+    return new_iou
+
+  def _get_COCOmedium( self ):
+    new_iou = copy.copy(self.iou_table)
+    new_iou.comp_rects = []
+    for e in self.iou_table.comp_rects:
+      if (32 <= e[0].area()) and (e[0].area() < 92):
+        new_iou.comp_rects.append(e)
+    new_iou.num_comp = len(new_iou.comp_rects)
+    new_iou.run_table()
+    return new_iou
+
+  def _get_COCOlarge( self ):
+    new_iou = copy.copy(self.iou_table)
+    new_iou.comp_rects = []
+    for e in self.iou_table.comp_rects:
+      if 92 <= e[0].area():
+        new_iou.comp_rects.append(e)
+    new_iou.num_comp = len(new_iou.comp_rects)
+    new_iou.run_table()
+    return new_iou
+
+
+  #PUBLIC
   def make_graph( self ):
     xs = []
     ys = []
@@ -258,6 +321,27 @@ class PVRtable:
       ap += self._get_best_precision( i/100.0 )
     ap = ap / 101.0
     return ap
+
+  def get_APsm( self, th=0.50 ):
+    #small medium large
+    #<32   32<96  96<   (area)
+    tmp_PVRtable = type(self)(self._get_COCOsmall())
+    APsm = tmp_PVRtable.get_AP11( th )
+    return APsm
+
+  def get_APmd( self, th=0.50 ):
+    #small medium large
+    #<32   32<96  96<   (area)
+    tmp_PVRtable = type(self)(self._get_COCOmedium())
+    APmd = tmp_PVRtable.get_AP11( th )
+    return APmd
+
+  def get_APlg( self, th=0.50 ):
+    #small medium large
+    #<32   32<96  96<   (area)
+    tmp_PVRtable = type(self)(self._get_COCOlarge())
+    APlg = tmp_PVRtable.get_AP11( th )
+    return APlg
 
   def get_mAP( self ):
     mAP = 0.0

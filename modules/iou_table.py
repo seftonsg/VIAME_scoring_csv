@@ -10,7 +10,7 @@
 #  2019 07 09
 ########################################
 
-
+import copy
 #scipy
 import scipy.sparse 
 #custom
@@ -21,16 +21,11 @@ ERROR_MARGIN = 10 ** -10
 
 
 class rect:
+  #SPECIAL
   def __init__( self ):
     self.llp = [0,0]
     self.urp = [0,0]
     self.ty  = None
-
-  #def __len__(self):
-  #  return len()
-
-  def __str__( self ):
-    return self._debug_str()
 
   def __copy__( self ):
     new = type(self)()
@@ -39,6 +34,13 @@ class rect:
     new.ty  = self.ty.copy()
     return new
 
+  #def __len__(self):
+  #  return len()
+
+  def __str__( self ):
+    return self._debug_str()
+
+  #PRIVATE
   def _debug_str( self ):
     str_  = 'Lower  Left: ' + str(self.llp[0]) + ', ' + str(self.llp[1]) + '\t'
     str_ += 'Upper Right: ' + str(self.urp[0]) + ', ' + str(self.urp[1])
@@ -152,10 +154,12 @@ class rect:
     area_u = area_a + area_b - area_i
     return float(area_i / area_u)
 
+  #PUBLIC
   def area( self ):
-    return _area(self)
+    return self._area()
 
 class IoU_table:
+  #SPECIAL
   def __init__( self, ntrue=None, ncomp=None):
      
     #files
@@ -172,18 +176,19 @@ class IoU_table:
 
   def __copy__( self ):
     new = type(self)()
-    new.comp_file = self.comp_file.copy()
-    new.true_file = self.true_file.copy()
+    new.comp_file = copy.copy(self.comp_file)
+    new.true_file = copy.copy(self.true_file)
 
     #annotation data
     new.comp_no_overlap = self.comp_no_overlap.copy()
-    new.comp_rect = self.comp_rects.copy()
-    new.true_rect = self.true_rects.copy()
+    new.comp_rects = self.comp_rects.copy()
+    new.true_rects = self.true_rects.copy()
     new.table     = self.table.copy()
-    new.num_comp  = self.num_comp.copy()
-    new.num_true  = self.num_true.copy()
+    new.num_comp  = copy.copy(self.num_comp)
+    new.num_true  = copy.copy(self.num_true)
     return new
 
+  #PRIVATE
   def _get_rects( self ):
     with open(self.true_file) as t:
       for i in t:
@@ -206,8 +211,8 @@ class IoU_table:
     self.num_true = len(self.true_rects)
 
   def _make_table( self ):
-    self._get_rects()
     #print(self.true_rects)
+    self.table = []
     self.table = scipy.sparse.lil_matrix( (len(self.true_rects), len(self.comp_rects)) )
     #print(len(self.true_rects), ':', len(self.comp_rects))
     for t_idx in range( 0, len(self.true_rects) ):
@@ -217,6 +222,7 @@ class IoU_table:
           self.table[ t_idx, c_idx ] = iou
     return None
 
+  #PUBLIC
   #set variables (this might not be necessary in python, it's possible I can do this directly)
   def set_comp( self, ncomp ):
     self.comp_file = ncomp
@@ -238,8 +244,12 @@ class IoU_table:
       d.write(str(self.table))
 
   def run( self ):
+    self._get_rects()
     self._make_table()
     #print(self.table)
     return self.table
 
+  def run_table(self):
+    self._make_table()
+    return self.table
 
