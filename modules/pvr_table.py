@@ -240,7 +240,8 @@ class PVRtable:
     new_iou = copy.copy(self.iou_table)
     new_iou.comp_rects = []
     for e in self.iou_table.comp_rects:
-      if e[0].area() < 32:
+      #32 ^ 2
+      if e[0].area() < 1024:
         new_iou.comp_rects.append(e)
     new_iou.num_comp = len(new_iou.comp_rects)
     new_iou.run_table()
@@ -250,7 +251,8 @@ class PVRtable:
     new_iou = copy.copy(self.iou_table)
     new_iou.comp_rects = []
     for e in self.iou_table.comp_rects:
-      if (32 <= e[0].area()) and (e[0].area() < 92):
+      #32 ^ = 1024, 96^2 = 8832
+      if (1024 <= e[0].area()) and (e[0].area() < 8832):
         new_iou.comp_rects.append(e)
     new_iou.num_comp = len(new_iou.comp_rects)
     new_iou.run_table()
@@ -260,7 +262,8 @@ class PVRtable:
     new_iou = copy.copy(self.iou_table)
     new_iou.comp_rects = []
     for e in self.iou_table.comp_rects:
-      if 92 <= e[0].area():
+      #96^2 = 8832
+      if 8832 <= e[0].area():
         new_iou.comp_rects.append(e)
     new_iou.num_comp = len(new_iou.comp_rects)
     new_iou.run_table()
