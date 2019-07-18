@@ -17,7 +17,6 @@ import pathlib
 #Custom imports
 import modules.utils      as utils
 import modules.output_gen as output_gen
-import modules.exec_score as exec_score
 import modules.preproc    as preproc
 import modules.iou_table  as iou_table
 import modules.pvr_table  as pvr_table
@@ -146,7 +145,6 @@ def copy_vitals( args ):
       Copies all src files to the output dir as
       not to alter the existing ones.
   """
-  shutil.copyfile(   args.script, args.output /        args.script.name)
   shutil.copyfile(    args.truth, args.output /         args.truth.name)
   shutil.copyfile( args.computed, args.output /      args.computed.name)
   shutil.copyfile(    args.truth, args.output / 'all' /    'truth_all.csv')
