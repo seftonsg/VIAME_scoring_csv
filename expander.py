@@ -156,7 +156,7 @@ def copy_vitals( args ):
 
 #Main
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser( description = 'Creates scoring directories by the image' )
+  parser = argparse.ArgumentParser( description = 'Creates scoring directories by the image, returns COCO metrics.' )
 
   print('\n')
 
@@ -200,13 +200,6 @@ if __name__ == "__main__":
     print( 'Error: images directory must be specified' )
     sys.exit( 0 )
 
-  #if not args.script:
-  #  print( 'Error: a running script must be specified' )
-  #  sys.exit( 0 )
-  #if args.script and not os.path.exists(args.script): #can I raise an exception here?
-  #  print( 'Error: specified script scoring file does not exist' )
-  #  sys.exit( 0 )
-
   if os.path.exists(args.output):
     print( 'Warning: Directory already exists and will be overwritten: ', args.output )
 
@@ -226,11 +219,13 @@ if __name__ == "__main__":
   print(tmp_dir)
   if not os.path.exists(tmp_dir):
     os.mkdir(tmp_dir)
-    #change my modules to classes when possible so I can pass these things easier
 
   #get the names of the images
   img_names = get_imgs( args.images )
 
+  ################################
+  #Actually do the math and stuff:
+  ################################
   #create directory tree 
   #make_dir_tree( img_names, args.output )
 
@@ -242,9 +237,7 @@ if __name__ == "__main__":
   #move_subtrack_files(   img_names, args.output )
 
   #make the scripts
-  #exec_score.run_scripts(  img_names, args )
-
-  #exec_score.run_scripts( img_names, args)
+  #exec_score.run_scripts( img_names, args )
   
   #output_gen.get_results( img_names, args )
   
@@ -253,14 +246,14 @@ if __name__ == "__main__":
   #preproc.make_fake_data( args.truth, tmp_dir/'fake.csv')
   #print(preproc.get_avg_dxdy(args.truth))
 
-  #sys.exit(0)
-
 
   #ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'fake.csv' )
   ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
   ious.run()
   ious.write_to_file(tmp_dir/'tmp.csv')
 
+
+  #overall results, output_gen.py should implement by-image scoring
   pvrs = pvr_table.PVRtable(ious)
   # print( 'n>00:', pvrs.get_num_above_th(0.0))
   # print( 'AP00:', pvrs.get_AP11_short(0.0))
@@ -268,14 +261,6 @@ if __name__ == "__main__":
   # print( 'n>25:', pvrs.get_num_above_th(0.25))
   # print( 'AP25:', pvrs.get_AP11_short(0.25))
   # print( 'F1:'  , pvrs.get_f1(0.25))
-  # #pvrs.make_graph()
-  # print( 'n>50:', pvrs.get_num_above_th(0.50))
-  # print( 'AP50:', pvrs.get_AP11_short(0.50))
-  # print( 'F1:'  , pvrs.get_f1(0.50))
-  # #pvrs.make_graph()
-  # print( 'n>95:', pvrs.get_num_above_th(0.950))
-  # print( 'AP95:', pvrs.get_AP11_short(0.950))
-  # print( 'F1:'  , pvrs.get_f1(0.95))
   #pvrs.make_graph()
   print('\n')
   print( 'AP00:', pvrs.get_AP11(0.00))
@@ -285,14 +270,6 @@ if __name__ == "__main__":
   print( 'APsm:', pvrs.get_APsm(0.00))
   print( 'APmd:', pvrs.get_APmd(0.00))
   print( 'APlg:', pvrs.get_APlg(0.00))
-  #print( 'mAP:' , pvrs.get_mAP())
-
-  #iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir/'IoU.csv' )
-
-
-  #make the results
-  #output_gen.get_results( img_names, args )
-
 
   print( 'Done\n' )
   #create a new computed file for each image

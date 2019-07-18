@@ -17,6 +17,7 @@ ERROR_MARGIN = 10 ** -10
 
 
 
+#Obsolete function for enforcing 1:1 matches
 def _pair_majority( ious, t_tys, c_tys, confs, out, by_class=None ):
   #new name: find matches? uniliniar pairs? 1:1??
   #instead of this... reverse-sort the elements of the array by IOU

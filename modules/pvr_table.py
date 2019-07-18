@@ -111,11 +111,8 @@ class PVRtable:
   def __init__( self, ious ):
     self.iou_table = ious
     self.meta_ious = []
-    #------Image, Name (computed), Confidence, T, F, ACCTP, ACCFP, ACCFN, Precision, Recall,
     self.table = []
-
-    #self.missed_truths = [] 
-    #self.true_comps = []
+    #return self ??? TODO?
 
   def __copy__( self ):
     new = type(self)(self.iou_table)
@@ -149,12 +146,12 @@ class PVRtable:
   def _compute_true_positives( self, th, enforce_ty=None ):
     table = []
     true_comps = []
-
-    #print('Len meta_ious: ', str(len(self.meta_ious)))
     used_comp = []
+
     for m_iou in self.meta_ious:
       tmp = pvr_element( 'img', 'name-', m_iou.c_idx, m_iou.t_idx )
       iou = m_iou.iou
+
       if enforce_ty:
         print('No.')
         sys.exit(1)
@@ -165,7 +162,6 @@ class PVRtable:
       tmp.conf  = m_iou.conf
       tmp.iou   = iou
       used_comp.append(m_iou.c_idx)
-
       table.append(tmp)
 
     for e in range(0, self.iou_table.num_comp):
@@ -207,7 +203,7 @@ class PVRtable:
   def _filter_dupes( self, table ):
     ntable = []
     used_c = []
-    used_t = []
+    #used_t = []
     for i in table:
       if i.c_idx not in used_c:
         #if i.t_idx not in used_t:
@@ -220,21 +216,15 @@ class PVRtable:
     #Fill data
     self.meta_ious = self._make_meta_ious()
     self.table = self._compute_true_positives( th, False )
-
-    #self.table.sort(key=lambda x: x.iou)
     
-
-    self.table.sort(key=lambda x: x.conf)
+    #self.table.sort(key=lambda x: x.iou)
+    self.table.sort( key=lambda x: x.conf )
     self.table = self.table[::-1]
     self.table = self._filter_dupes( self.table )
-    #for i in self.table:
-    #  print(i)
-    #sys.exit(0)
 
     self._update_acc_stats()
     self._update_table_pvr( th )
-    # for i in self.table:
-    #   print(i.is_true, i.c_idx, i.conf, i.acctp, i.accfp, i.accfn, i.prec, i.rec)
+    return None
 
   def _get_best_precision( self, recth ):
     best_p = 0.0
@@ -276,18 +266,16 @@ class PVRtable:
     new_iou.run_table()
     return new_iou
 
-
   #PUBLIC
   def make_graph( self ):
     xs = []
     ys = []
-
     for i in self.table:
       xs.append( i.rec  )
       ys.append( self._get_best_precision(i.rec))
       #ys.append( i.prec )
 
-    plt.plot(xs, ys, 'r')
+    plt.plot( xs, ys, 'r' )
     plt.ylabel( 'Precision' )
     plt.xlabel( 'Recall'    )
     plt.axis([0.0,1.0,0.0,1.0])
@@ -353,9 +341,7 @@ class PVRtable:
   def get_num_above_th( self, th ):
     n = 0
     self._make_sorted_iou_table( th )
-    #print(self.table)
     for i in self.table:
-      #print( i.c_idx, i.t_match_idx, i.is_true )
       if i.is_true:
         n += 1
     return n
@@ -368,5 +354,4 @@ class PVRtable:
       return None
     f = (2*p*r)/(p+r)
     return f
-
 
