@@ -1,12 +1,96 @@
+
+TRUE:::
+
 NES_bull -----  36
 NES_sam ------  38
 NES_young ----   1
 NES_juv ------   2
-CSL_cow ------ 280
+CSL_cow ------ 281
 CSL_pup ------ 764
 CSL_juv ------  30
 CSL_sam ------  10
 CSL_bull -----   3
 CSL_yng_male -  59
-CSL_dead_pup -   0
+CSL_dead_pup -   1
 PHS ----------   0
+
+
+And because I don't name files properly, here's the data from all the computed files
+
+COMPUTED:::
+
+yolov3
+ 1c '97:
+  CSL_pup : 969
+ 1c '15:
+  CSL_pup : 889
+
+ 5c '97:
+  NES_bull : 47
+  CSL_cow : 552
+  CSL_pup : 231
+  CSL_bull : 171
+   PHS : 41
+ 5c '97:
+  NES_bull : 40
+  CSL_cow : 451
+  CSL_pup : 210
+  CSL_bull : 92
+  PHS : 16
+
+12c '97:
+  NES_bull : 29
+  NES_sam : 18
+  NES_young : 0
+  NES_juv : 0
+  CSL_cow : 409
+  CSL_pup : 240
+  CSL_juv : 125
+  CSL_sam : 62
+  CSL_bull : 73
+  CSL_yng_male : 95
+  CSL_dead_pup : 9
+  PHS : 74
+12c '15:
+  NES_bull : 38
+  NES_sam : 5
+  NES_young : 0
+  NES_juv : 0
+  CSL_cow : 298
+  CSL_pup : 222
+  CSL_juv : 78
+  CSL_sam : 23
+  CSL_bull : 38
+  CSL_yng_male : 46
+  CSL_dead_pup : 2
+  PHS : 57
+
+Cascade RCNN:
+ 1c:
+  CSL_pup : 1092
+ 1c0.002:
+  CSL_pup : 1380
+
+ 5c0.002:
+  NES_bull : 95
+  CSL_cow : 404
+  CSL_pup : 570
+  CSL_bull : 241
+  PHS : 17
+
+12c0.002:
+  NES_bull : 56
+  NES_sam : 14
+  NES_young : 0
+  NES_juv : 0
+  CSL_cow : 250
+  CSL_pup : 577
+  CSL_juv : 112
+  CSL_sam : 125
+  CSL_bull : 118
+  CSL_yng_male : 31
+  CSL_dead_pup : 8
+  PHS : 20
+
+
+
