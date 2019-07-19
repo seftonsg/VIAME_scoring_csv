@@ -1,0 +1,12 @@
+NES_bull -----  36
+NES_sam ------  38
+NES_young ----   1
+NES_juv ------   2
+CSL_cow ------ 280
+CSL_pup ------ 764
+CSL_juv ------  30
+CSL_sam ------  10
+CSL_bull -----   3
+CSL_yng_male -  59
+CSL_dead_pup -   0
+PHS ----------   0
