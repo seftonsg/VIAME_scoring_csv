@@ -107,13 +107,14 @@ def move_subtrack_files( img_names, out_dir ):
     dst = out_dir / i / tname
     preproc.order_coordinates(src, dst)
     os.remove( src )
+    #os.rename( src, dst )
     #computed
     cname = 'computed_'+i+'.csv'
     src = out_dir / cname
     dst = out_dir / i / cname
-    #os.rename( src, dst )
     preproc.order_coordinates(src, dst)
     os.remove( src )
+    #os.rename( src, dst )
 
   return None
 
@@ -147,10 +148,12 @@ def copy_vitals( args ):
       Copies all src files to the output dir as
       not to alter the existing ones.
   """
-  shutil.copyfile(    args.truth, args.output /         args.truth.name)
-  shutil.copyfile( args.computed, args.output /      args.computed.name)
-  shutil.copyfile(    args.truth, args.output / 'all' /    'truth_all.csv')
-  shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
+  preproc.order_coordinates(    args.truth, args.output /         args.truth.name)
+  preproc.order_coordinates( args.computed, args.output /      args.computed.name)
+  preproc.order_coordinates(    args.truth, args.output / 'all' /    'truth_all.csv')
+  preproc.order_coordinates( args.computed, args.output / 'all' / 'computed_all.csv')
+  #shutil.copyfile(    args.truth, args.output / 'all' /    'truth_all.csv')
+  #shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
   return None
 
 #Main

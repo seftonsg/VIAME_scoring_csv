@@ -382,8 +382,8 @@ def write_res( dst, pvrs ):
     d.write( f'{"  APsm ":=<30}> {APsm:<.5f}'  + '  (         area < 32^2 )\n' )
     d.write( f'{"  APmd ":=<30}> {APmd:<.5f}'  + '  ( 32^2 <= area < 92^2 )\n' )
     d.write( f'{"  APlg ":=<30}> {APlg:<.5f}'  + '  ( 92^2 <= area        )\n' )
-    d.write( f'{"  F1-50 ":=<30}> {f150:<.5f}' + '  \n' )
-    d.write( f'{"  F1-75 ":=<30}> {f175:<.5f}' + '  \n' )
+    #d.write( f'{"  F1-50 ":=<30}> {f150:<.5f}' + '  \n' )
+    #d.write( f'{"  F1-75 ":=<30}> {f175:<.5f}' + '  \n' )
     d.write( '\n' + '-'*40 + '\n' )
     #print(len(pvrs.table))
   return None
@@ -406,8 +406,8 @@ def get_results( img_names, args ):
 
   #Do by image
   for i in img_names:
-    true_path   = args.output / i / ('truth_' + i + '.csv')
     comp_path   = args.output / i / ('computed_' + i + '.csv')
+    true_path   = args.output / i / ('truth_' + i + '.csv')
     ious = iou_table.IoU_table( true_path, comp_path )
     ious.run()
     pvrs = PVRtable(ious)
@@ -421,7 +421,7 @@ def get_results( img_names, args ):
     pvrs.make_graph(sub_graph_path)
   
   comp_path  = args.output / 'all' / ('computed_all.csv')
-  comp_path  = args.output / 'all' / ('truth_all.csv')
+  true_path  = args.output / 'all' / ('truth_all.csv')
   ious = iou_table.IoU_table( true_path, comp_path )
   ious.run()
   pvrs = PVRtable(ious)
@@ -430,7 +430,7 @@ def get_results( img_names, args ):
     d.write( 'Overall Evaluation Metrics:' + '\n' )
   write_res(hum_path, pvrs)
 
-  pvrs.get_AP11(0.50) #update pvrs to have proper data for graph
+  pvrs.get_AP11(0.50) #update pvrs to have proper data for grap
   pvrs.make_graph(graph_path)
 
   return None
