@@ -1,115 +1,57 @@
 
-----------------------------------------
-Data for all:
-  # Computed Detections ======> 1134      
-  # True Detections ==========> 1223      
-
-  # True  Positives (TP) =====> 1024      
-  # False Positives (FP) =====> 110       
-  # True  Negatives (TN) =====> NA
-  # False Negatives (FN) =====> 199       
-
-  P {True Positive} ==========> 0.79885
-  P {False Positive} =========> 0.09700
-
-  Sensitivity ================> 0.83729
-  Precision ==================> 0.90300
-  Recall =====================> 0.83729
-  F1_Score ===================> 0.86890
 
 ----------------------------------------
-Data for 18ZC4773:
-  # Computed Detections ======> 94        
-  # True Detections ==========> 101       
-
-  # True  Positives (TP) =====> 79        
-  # False Positives (FP) =====> 15        
-  # True  Negatives (TN) =====> NA
-  # False Negatives (FN) =====> 22        
-
-  P {True Positive} ==========> 0.89109
-  P {False Positive} =========> 0.15957
-
-  Sensitivity ================> 0.78218
-  Precision ==================> 0.84043
-  Recall =====================> 0.78218
-  F1_Score ===================> 0.81026
+Metrics for 18ZC4773:
+  mAP ========================> 0.05765  ( COCO Primary        )
+  AP50 =======================> 0.11056  ( Pascal VOC          )
+  AP75 =======================> 0.04382  ( Strict              )
+  APsm =======================> 0.03030  (         area < 32^2 )
+  APmd =======================> 0.39454  ( 32^2 <= area < 92^2 )
+  APlg =======================> 0.35813  ( 92^2 <= area        )
 
 ----------------------------------------
-Data for 18ZC4890:
-  # Computed Detections ======> 117       
-  # True Detections ==========> 103       
-
-  # True  Positives (TP) =====> 115       
-  # False Positives (FP) =====> 2         
-  # True  Negatives (TN) =====> NA
-  # False Negatives (FN) =====> -12       
-
-  P {True Positive} ==========> 0.94175
-  P {False Positive} =========> 0.01709
-
-  Sensitivity ================> 1.11650
-  Precision ==================> 0.98291
-  Recall =====================> 1.11650
-  F1_Score ===================> 1.04545
+Metrics for 18ZC4890:
+  mAP ========================> 0.08593  ( COCO Primary        )
+  AP50 =======================> 0.16897  ( Pascal VOC          )
+  AP75 =======================> 0.06006  ( Strict              )
+  APsm =======================> 0.09091  (         area < 32^2 )
+  APmd =======================> 0.99684  ( 32^2 <= area < 92^2 )
+  APlg =======================> 0.00000  ( 92^2 <= area        )
 
 ----------------------------------------
-Data for 18ZC5063:
-  # Computed Detections ======> 187       
-  # True Detections ==========> 177       
-
-  # True  Positives (TP) =====> 158       
-  # False Positives (FP) =====> 29        
-  # True  Negatives (TN) =====> NA
-  # False Negatives (FN) =====> 19        
-
-  P {True Positive} ==========> 0.79661
-  P {False Positive} =========> 0.15508
-
-  Sensitivity ================> 0.89266
-  Precision ==================> 0.84492
-  Recall =====================> 0.89266
-  F1_Score ===================> 0.86813
+Metrics for 18ZC5063:
+  mAP ========================> 0.07662  ( COCO Primary        )
+  AP50 =======================> 0.15929  ( Pascal VOC          )
+  AP75 =======================> 0.07765  ( Strict              )
+  APsm =======================> 0.18182  (         area < 32^2 )
+  APmd =======================> 0.65107  ( 32^2 <= area < 92^2 )
+  APlg =======================> 0.00000  ( 92^2 <= area        )
 
 ----------------------------------------
-Data for 18ZC5064:
-  # Computed Detections ======> 431       
-  # True Detections ==========> 508       
-
-  # True  Positives (TP) =====> 399       
-  # False Positives (FP) =====> 32        
-  # True  Negatives (TN) =====> NA
-  # False Negatives (FN) =====> 109       
-
-  P {True Positive} ==========> 0.75000
-  P {False Positive} =========> 0.07425
-
-  Sensitivity ================> 0.78543
-  Precision ==================> 0.92575
-  Recall =====================> 0.78543
-  F1_Score ===================> 0.84984
+Metrics for 18ZC5064:
+  mAP ========================> 0.09089  ( COCO Primary        )
+  AP50 =======================> 0.19575  ( Pascal VOC          )
+  AP75 =======================> 0.05844  ( Strict              )
+  APsm =======================> 0.09091  (         area < 32^2 )
+  APmd =======================> 0.60299  ( 32^2 <= area < 92^2 )
+  APlg =======================> 0.09091  ( 92^2 <= area        )
 
 ----------------------------------------
-Data for 18ZC5757:
-  # Computed Detections ======> 305       
-  # True Detections ==========> 334       
-
-  # True  Positives (TP) =====> 273       
-  # False Positives (FP) =====> 32        
-  # True  Negatives (TN) =====> NA
-  # False Negatives (FN) =====> 61        
-
-  P {True Positive} ==========> 0.80239
-  P {False Positive} =========> 0.10492
-
-  Sensitivity ================> 0.81737
-  Precision ==================> 0.89508
-  Recall =====================> 0.81737
-  F1_Score ===================> 0.85446
+Metrics for 18ZC5757:
+  mAP ========================> 0.00000  ( COCO Primary        )
+  AP50 =======================> 0.00000  ( Pascal VOC          )
+  AP75 =======================> 0.00000  ( Strict              )
+  APsm =======================> 0.09091  (         area < 32^2 )
+  APmd =======================> 0.69984  ( 32^2 <= area < 92^2 )
+  APlg =======================> 0.09091  ( 92^2 <= area        )
 
 ----------------------------------------
 Overall Evaluation Metrics:
-  Area Under ROC =============> 0.57692
-  Gini Coefficient ===========> 0.15384
+  mAP ========================> 0.04619  ( COCO Primary        )
+  AP50 =======================> 0.07795  ( Pascal VOC          )
+  AP75 =======================> 0.03409  ( Strict              )
+  APsm =======================> 0.09091  (         area < 32^2 )
+  APmd =======================> 0.69963  ( 32^2 <= area < 92^2 )
+  APlg =======================> 0.09091  ( 92^2 <= area        )
 
 ----------------------------------------

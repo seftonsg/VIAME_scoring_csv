@@ -16,9 +16,6 @@ import subprocess
 import pathlib 
 #Custom imports
 import modules.utils      as utils
-import modules.output_gen as output_gen
-import modules.exec_score as exec_score
-#import modules.iou_calc   as iou_calc
 import modules.preproc    as preproc
 import modules.iou_table  as iou_table
 import modules.pvr_table  as pvr_table
@@ -108,12 +105,16 @@ def move_subtrack_files( img_names, out_dir ):
     tname = 'truth_'+i+'.csv'
     src = out_dir / tname
     dst = out_dir / i / tname
-    os.rename( src, dst )
+    preproc.order_coordinates(src, dst)
+    os.remove( src )
+    #os.rename( src, dst )
     #computed
     cname = 'computed_'+i+'.csv'
     src = out_dir / cname
     dst = out_dir / i / cname
-    os.rename( src, dst )
+    preproc.order_coordinates(src, dst)
+    os.remove( src )
+    #os.rename( src, dst )
 
   return None
 
@@ -147,16 +148,17 @@ def copy_vitals( args ):
       Copies all src files to the output dir as
       not to alter the existing ones.
   """
-  shutil.copyfile(   args.script, args.output /        args.script.name)
-  shutil.copyfile(    args.truth, args.output /         args.truth.name)
-  shutil.copyfile( args.computed, args.output /      args.computed.name)
-  shutil.copyfile(    args.truth, args.output / 'all' /    'truth_all.csv')
-  shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
+  preproc.order_coordinates(    args.truth, args.output /         args.truth.name)
+  preproc.order_coordinates( args.computed, args.output /      args.computed.name)
+  preproc.order_coordinates(    args.truth, args.output / 'all' /    'truth_all.csv')
+  preproc.order_coordinates( args.computed, args.output / 'all' / 'computed_all.csv')
+  #shutil.copyfile(    args.truth, args.output / 'all' /    'truth_all.csv')
+  #shutil.copyfile( args.computed, args.output / 'all' / 'computed_all.csv')
   return None
 
 #Main
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser( description = 'Creates scoring directories by the image' )
+  parser = argparse.ArgumentParser( description = 'Creates scoring directories by the image, returns COCO metrics.' )
 
   print('\n')
 
@@ -200,13 +202,6 @@ if __name__ == "__main__":
     print( 'Error: images directory must be specified' )
     sys.exit( 0 )
 
-  #if not args.script:
-  #  print( 'Error: a running script must be specified' )
-  #  sys.exit( 0 )
-  #if args.script and not os.path.exists(args.script): #can I raise an exception here?
-  #  print( 'Error: specified script scoring file does not exist' )
-  #  sys.exit( 0 )
-
   if os.path.exists(args.output):
     print( 'Warning: Directory already exists and will be overwritten: ', args.output )
 
@@ -223,69 +218,28 @@ if __name__ == "__main__":
 
   #tmp_dir = args.output / '.tmp'
   tmp_dir = utils.make_PurePath('.tmp')
-  print(tmp_dir)
+  #print(tmp_dir)
   if not os.path.exists(tmp_dir):
     os.mkdir(tmp_dir)
-    #change my modules to classes when possible so I can pass these things easier
 
   #get the names of the images
   img_names = get_imgs( args.images )
 
+  ################################
+  #Actually do the math and stuff:
+  ################################
   #create directory tree 
-  #make_dir_tree( img_names, args.output )
+  make_dir_tree( img_names, args.output )
 
   #copy over vital files
-  #copy_vitals( args )
+  copy_vitals( args )
 
   #create a new truth file for each image
-  #create_subtrack_files( img_names, args.output, args.truth, args.computed )
-  #move_subtrack_files(   img_names, args.output )
+  create_subtrack_files( img_names, args.output, args.truth, args.computed )
+  move_subtrack_files(   img_names, args.output )
 
-  #make the scripts
-  #exec_score.run_scripts(  img_names, args )
-
-  #exec_score.run_scripts( img_names, args)
-  
-  #output_gen.get_results( img_names, args )
-  
-  preproc.order_coordinates(    args.truth, tmp_dir/'tmpt.csv' )
-  preproc.order_coordinates( args.computed, tmp_dir/'tmpc.csv' )
-  #preproc.make_fake_data( args.truth, tmp_dir/'fake.csv')
-  #print(preproc.get_avg_dxdy(args.truth))
-
-  #sys.exit(0)
-
-
-  #ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'fake.csv' )
-  ious = iou_table.IoU_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv' )
-  ious.run()
-  ious.write_to_file(tmp_dir/'tmp.csv')
-
-  pvrs = pvr_table.PVRtable(ious)
-  print( 'n>00:', pvrs.get_num_above_th(0.0))
-  print( 'AP00:', pvrs.get_AP11_short(0.0))
-  #pvrs.make_graph()
-  print( 'n>25:', pvrs.get_num_above_th(0.25))
-  print( 'AP25:', pvrs.get_AP11_short(0.25))
-  print( 'F1:'  , pvrs.get_f1(0.25))
-  #pvrs.make_graph()
-  print( 'n>50:', pvrs.get_num_above_th(0.50))
-  print( 'AP50:', pvrs.get_AP11_short(0.50))
-  print( 'F1:'  , pvrs.get_f1(0.50))
-  #pvrs.make_graph()
-  print( 'n>95:', pvrs.get_num_above_th(0.950))
-  print( 'AP95:', pvrs.get_AP11_short(0.950))
-  print( 'F1:'  , pvrs.get_f1(0.95))
-  #pvrs.make_graph()
-  print('\n')
-  print( 'mAP:' , pvrs.get_mAP())
-
-  #iou_calc.get_table( tmp_dir/'tmpt.csv', tmp_dir/'tmpc.csv', tmp_dir/'IoU.csv' )
-
-
-  #make the results
-  #output_gen.get_results( img_names, args )
-
+  #make and get results by the image
+  pvr_table.get_results( img_names, args )
 
   print( 'Done\n' )
   #create a new computed file for each image
