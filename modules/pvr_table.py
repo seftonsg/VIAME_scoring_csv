@@ -320,25 +320,25 @@ class PVRtable:
     ap = ap / 101.0
     return ap
 
-  def get_APsm( self, th=0.50 ):
+  def get_APsm( self ):
     #small medium large
     #<32   32<96  96<   (area)
     tmp_PVRtable = type(self)(self._get_COCOsmall())
-    APsm = tmp_PVRtable.get_AP11( th )
+    APsm = tmp_PVRtable.get_mAP(  )
     return APsm
 
-  def get_APmd( self, th=0.50 ):
+  def get_APmd( self ):
     #small medium large
     #<32   32<96  96<   (area)
     tmp_PVRtable = type(self)(self._get_COCOmedium())
-    APmd = tmp_PVRtable.get_AP11( th )
+    APmd = tmp_PVRtable.get_mAP(  )
     return APmd
 
-  def get_APlg( self, th=0.50 ):
+  def get_APlg( self ):
     #small medium large
     #<32   32<96  96<   (area)
     tmp_PVRtable = type(self)(self._get_COCOlarge())
-    APlg = tmp_PVRtable.get_AP11( th )
+    APlg = tmp_PVRtable.get_mAP(  )
     return APlg
 
   def get_mAP( self ):
@@ -368,20 +368,22 @@ class PVRtable:
 
 def write_res( dst, pvrs ):
   with open(dst, 'a') as d:
-    mAP  = pvrs.get_mAP (    )
+    AP00 = pvrs.get_AP11(0.00)
     AP50 = pvrs.get_AP11(0.50)
     AP75 = pvrs.get_AP11(0.75)
-    APsm = pvrs.get_APsm(0.00)
-    APmd = pvrs.get_APmd(0.00)
-    APlg = pvrs.get_APlg(0.00)
+    mAP  = pvrs.get_mAP (    )
+    APsm = pvrs.get_APsm(    )
+    APmd = pvrs.get_APmd(    )
+    APlg = pvrs.get_APlg(    )
     f150 = pvrs.get_f1  (0.50)
     f175 = pvrs.get_f1  (0.75)
-    d.write( f'{"  mAP ":=<30}> {mAP:<.5f}'    + '  ( COCO Primary        )\n' )
-    d.write( f'{"  AP50 ":=<30}> {AP50:<.5f}'  + '  ( Pascal VOC          )\n' )
-    d.write( f'{"  AP75 ":=<30}> {AP75:<.5f}'  + '  ( Strict              )\n' )
-    d.write( f'{"  APsm ":=<30}> {APsm:<.5f}'  + '  (         area < 32^2 )\n' )
-    d.write( f'{"  APmd ":=<30}> {APmd:<.5f}'  + '  ( 32^2 <= area < 92^2 )\n' )
-    d.write( f'{"  APlg ":=<30}> {APlg:<.5f}'  + '  ( 92^2 <= area        )\n' )
+    d.write( f'{"  AP00 ":=<30}> {AP00:<.5f}'  + '  ( Single Pixel Overlap )\n' )
+    d.write( f'{"  mAP ":=<30}> {mAP:<.5f}'    + '  ( COCO Primary         )\n' )
+    d.write( f'{"  AP50 ":=<30}> {AP50:<.5f}'  + '  ( Pascal VOC           )\n' )
+    d.write( f'{"  AP75 ":=<30}> {AP75:<.5f}'  + '  ( Strict               )\n' )
+    d.write( f'{"  APsm ":=<30}> {APsm:<.5f}'  + '  (         area < 32^2  )\n' )
+    d.write( f'{"  APmd ":=<30}> {APmd:<.5f}'  + '  ( 32^2 <= area < 92^2  )\n' )
+    d.write( f'{"  APlg ":=<30}> {APlg:<.5f}'  + '  ( 92^2 <= area         )\n' )
     #d.write( f'{"  F1-50 ":=<30}> {f150:<.5f}' + '  \n' )
     #d.write( f'{"  F1-75 ":=<30}> {f175:<.5f}' + '  \n' )
     d.write( '\n' + '-'*40 + '\n' )

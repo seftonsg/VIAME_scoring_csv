@@ -1,0 +1,17 @@
+pwd:]
+
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/1c_tracks_yolov3_v0915_5img.csv -images=5images.txt -output=1c_yolo15
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/1c_tracks_yolov3_v0997_5img.csv -images=5images.txt -output=1c_yolo97
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/12c_tracks_yolov3_v0915_5img.csv -images=5images.txt -output=12c_yolo15
+
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/12c_tracks_yolov3_v0997_5img.csv -images=5images.txt -output=12c_yolo97
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/5c_tracks_yolov3_v0997_5img.csv -images=5images.txt -output=5c_yolo97
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/5c_tracks_yolov3_v0915_5img.csv -images=5images.txt -output=5c_yolo15
+
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/1c_tracks_CRNN_v0915_5img.csv -images=5images.txt -output=1c_CRNN
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/1c_tracks_CRNN_v0915_5img_0.002.csv -images=5images.txt -output=1c_CRNN_0.002
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/5c_tracks_CRNN_v0915_5img_0.002.csv -images=5images.txt -output=5c_CRNN_0.002
+
+python expander.py  -truth=tracks/truths/TRUTHS_5img.csv -computed=tracks/5img/12c_tracks_CRNN_v0915_5img_0.002.csv -images=5images.txt -output=12c_CRNN_0.002
+
+
