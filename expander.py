@@ -218,7 +218,7 @@ if __name__ == "__main__":
 
   #tmp_dir = args.output / '.tmp'
   tmp_dir = utils.make_PurePath('.tmp')
-  print(tmp_dir)
+  #print(tmp_dir)
   if not os.path.exists(tmp_dir):
     os.mkdir(tmp_dir)
 

@@ -8,15 +8,9 @@
 
 #Testing
 t
-exp/*
-real_data/*/*/output_roc.png
-real_data/*/*/*.bat
-real_data/*/*/computed*.csv
-real_data/*/*/truth*.csv
+real_data/*/18*/*.csv
 real_data/*/*.csv
-real_data/*/*.bat
-real_data/*/*/output_roc.txt
-real_data/*/*/output_score_tracks.txt
+real_data/*/all
 PvR*.csv
 new*
 .tmp*
