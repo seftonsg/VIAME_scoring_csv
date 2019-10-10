@@ -5,6 +5,7 @@
 
 #OS-Specific (filesys management)
 .DS_Store
+*.icloud
 
 #Testing
 t
