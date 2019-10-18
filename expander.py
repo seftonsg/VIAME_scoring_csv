@@ -168,7 +168,7 @@ if __name__ == "__main__":
   parser.add_argument( '-computed', default=None,
              help='Input filename for computed tracks file.' )
   parser.add_argument( '-images', default=None, #edit to accept file, or just computed
-             help='Input directory for images.')
+             help='Input directory or list file for images.')
 
   # Outputs
   parser.add_argument( '-output', default='exp',
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     print( '       manual addition of computed tracks not yet supported' )
     sys.exit( 0 )
   if not args.images:
-    print( 'Error: images directory must be specified' )
+    print( 'Error: images directory or list file must be specified' )
     sys.exit( 0 )
 
   if os.path.exists(args.output):
@@ -210,8 +210,6 @@ if __name__ == "__main__":
   args.images   = utils.make_PurePath(   args.images ) 
   args.output   = utils.make_PurePath(   args.output )
   args.results  = args.output / args.results
-  #args.res_file = utils.make_PurePath( args.res_file )
-  #args.res_csv  = utils.make_PurePath(  args.res_csv )
 
   #tmp_dir = args.output / '.tmp'
   tmp_dir = utils.make_PurePath('.tmp')
