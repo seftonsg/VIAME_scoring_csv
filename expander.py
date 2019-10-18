@@ -169,8 +169,6 @@ if __name__ == "__main__":
              help='Input filename for computed tracks file.' )
   parser.add_argument( '-images', default=None, #edit to accept file, or just computed
              help='Input directory for images.')
-  parser.add_argument( '-script', default=None,
-             help='The name of the scoring script.  Will not copy otherwise.')
 
   # Outputs
   parser.add_argument( '-output', default='exp',
@@ -211,7 +209,6 @@ if __name__ == "__main__":
   args.computed = utils.make_PurePath( args.computed )
   args.images   = utils.make_PurePath(   args.images ) 
   args.output   = utils.make_PurePath(   args.output )
-  #args.script   = utils.make_PurePath(   args.script )
   args.results  = args.output / args.results
   #args.res_file = utils.make_PurePath( args.res_file )
   #args.res_csv  = utils.make_PurePath(  args.res_csv )
