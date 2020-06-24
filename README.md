@@ -38,6 +38,10 @@ __Note:__ This program supports python PurePath. Any argument _except for_ `-res
 |   `-output` |                Path for the output directory. |
 |  `-results` | Name of the results folder in the output dir. |
 
+## Interpretation  
+
+
+
 **This program was written as part of an internship provided by the Ernest F. Hollings Scholarship**  
 **Written by:** Sage Sefton  
 **Advised by:** George "Randy" Cutter  

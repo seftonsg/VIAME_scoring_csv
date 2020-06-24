@@ -237,5 +237,3 @@ if __name__ == "__main__":
   pvr_table.get_results( img_names, args )
 
   print( 'Done\n' )
-  #create a new computed file for each image
-  #don't forget the "all" directory
