@@ -2,6 +2,9 @@
 
 This is a command-line application that calculates COCO and PASCAL style metrics given a set of true and computed annotations.  Currently, the program only supports CSV files formatted the way VIAME accepts and produces them.  Other detection file formats may be supported in the future.
 
+This software was lasted with VIAME CSV formats from 0.9.15 in Summer 2019.
+Please be aware that it may not work with other versions.
+
 ## Roadmap  
 I intend to update this program in my spare time.  These are the improvements I would like to make, in no particular order:
  * Conversion to C++
